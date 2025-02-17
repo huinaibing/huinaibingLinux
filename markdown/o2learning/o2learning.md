@@ -146,6 +146,7 @@ license还要写，好专业。。
 ![image-20250117152004326](./img/image-20250117152004326.png)
 
 > 总结，当需要分析特定碰撞的时候使用这个
+> ![alt text](./img/image1.png)
 
 ![image-20250117203116456](./img/image-20250117203116456.png)
 
@@ -154,6 +155,8 @@ license还要写，好专业。。
 > 定义一个config
 >
 > ![image-20250117203150600](./img/image-20250117203150600.png)
+> 这样的好处是可以在json里面修改这个变量
+> ![alt text](./img/image.png)
 
 > ![image-20250118102004753](./img/image-20250118102004753.png)
 >
@@ -205,3 +208,67 @@ license还要写，好专业。。
 
 ![image-20250118120148425](./img/image-20250118120148425.png)
 
+## 附录
+```
+// 简单的代码（没join）
+// Copyright 2019-2020 CERN and copyright holders of ALICE O2.
+// See https://alice-o2.web.cern.ch/copyright for details of the copyright holders.
+// All rights not expressly granted are reserved.
+//
+// This software is distributed under the terms of the GNU General Public
+// License v3 (GPL Version 3), copied verbatim in the file "COPYING".
+//
+// In applying this license CERN does not waive the privileges and immunities
+// granted to it by virtue of its status as an Intergovernmental Organization
+// or submit itself to any jurisdiction.
+///
+/// \brief This task is an empty skeleton that fills a simple eta histogram.
+///        it is meant to be a blank page for further developments.
+/// \author everyone
+
+#include "Framework/runDataProcessing.h"
+#include "Framework/AnalysisTask.h"
+
+using namespace o2;
+using namespace o2::framework;
+
+struct myExampleTask {
+  // Histogram registry: an object to hold your histograms
+  HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
+
+  Configurable<int> nBinsEta{"nBinsEta", 30, "N bins in eta histo"};
+  Configurable<int> nBinsPt{"nBinsPt", 100, "N bins in pT histo"};
+
+  Configurable<double> axisEtaStart{"axisEtaStart", -1.5, "axisEtaStart"};
+  Configurable<double> axisEtaEnd{"axisEtaEnd", +1.5, "axisEtaend"};
+
+  Configurable<double> axisPtStart{"axisPtStart", 0.0, "axisEtaStart"};
+  Configurable<double> axisPtEnd{"axisPtEnd", +10.0, "axisEtaend"};
+
+  void init(InitContext const&)
+  {
+    // define axes you want to use
+    const AxisSpec axisEta{nBinsEta, axisEtaStart, axisEtaEnd, "#eta"};
+    const AxisSpec myaxisPt{nBinsPt, axisPtStart, axisPtEnd, "P_{t}"};
+
+    // create histograms
+    histos.add("etaHistogram", "etaHistogram", kTH1F, {axisEta});
+    histos.add("ptHistogram", "ptHistogram", kTH1F, {myaxisPt});
+  }
+
+  void process(aod::TracksIU const& tracks)
+  {
+    for (auto& track : tracks) {
+      histos.fill(HIST("etaHistogram"), track.eta());
+      histos.fill(HIST("ptHistogram"), track.pt());
+    }
+  }
+};
+
+WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
+{
+  return WorkflowSpec{
+    adaptAnalysisTask<myExampleTask>(cfgc)};
+}
+
+```
