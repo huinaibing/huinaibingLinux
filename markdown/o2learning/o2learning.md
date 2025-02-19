@@ -206,6 +206,11 @@ license还要写，好专业。。
 >
 > join，这里把Tracks和TracksExtras join一起了，但是我不知道他具体指的是啥
 
+> 筛选，注意需要一个头文件
+> ![alt text](image.png)
+> 运行时还要加一点东西
+> ![alt text](image-1.png)
+
 ![image-20250118120148425](./img/image-20250118120148425.png)
 
 ## 附录
