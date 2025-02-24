@@ -10,7 +10,7 @@
 # Physics of Ultra-Peripheral Nuclear Collisions (UPCs)
 
 ## 1. **Fundamental Concepts**
-   - **Definition**: Large-impact-parameter collisions (b > 2R_A)
+   - **Definition**: Large-impact-parameter collisions $b > 2R_A$
    - **Key Mechanisms**:
      - **Photon-Nucleus Interaction** (Fig 1a)
      - **Photon-Photon Interaction** (Fig 1b)
