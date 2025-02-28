@@ -14,3 +14,10 @@
 [draw_2.c TLatex](./simple_script/draw_2.c)
 
 [draw_3.c 画线 保存成文件](./simple_script/draw_3.c)
+
+## 产生随机数
+[random_test.c 产生简单的随机数， 种子问题](./rootTutorial14/random_test.c)
+
+[uniform_random.c 产生随机数并且填涂， 有多种分布](./rootTutorial14/uniform_random.c)
+
+[random_seed_legend.c 用带seed的产生器 并且使用legend区分不同图线，将多个图画在一起](./rootTutorial14/random_seed_legend.c)
