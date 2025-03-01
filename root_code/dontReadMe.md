@@ -5,8 +5,9 @@
 # root笔记（新）
 > 旧的去看我其他仓库
 > [root的document官网，虽然看不懂](https://root.cern/doc/v632/)
+> [震惊！ 某人竟用短短一行代码将复杂的root代码简化得如此简单， 实现方法竟是这些](./XQY_Utils.h)
 
-## 简单的脚本
+## 简单的脚本 对应root教程13
 [draw.c 包括画布、图片函数](./simple_script/draw.c)
 
 [draw_1.c 包括线的样子的设置 marker的相关设置 各种标题](./simple_script/draw_1.c)
@@ -21,3 +22,9 @@
 [uniform_random.c 产生随机数并且填涂， 有多种分布](./rootTutorial14/uniform_random.c)
 
 [random_seed_legend.c 用带seed的产生器 并且使用legend区分不同图线，将多个图画在一起](./rootTutorial14/random_seed_legend.c)
+
+[diy_function 自定义一个分布函数并且抽样](./rootTutorial14/diy_function.c)
+
+[fit.md 使用鼠标操作去拟合函数](./rootTutorial14/fit.md)
+
+[simple_fit.c 使用代码拟合函数]()
