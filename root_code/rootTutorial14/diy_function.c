@@ -1,6 +1,6 @@
 #include "../XQY_Utils.h"
 
-void diy_function()
+TH1D* diy_function()
 {
     get_simple_canvas();
     TH1D* hist = get_simple_hist(100, 0, 10);
@@ -15,4 +15,6 @@ void diy_function()
         // 也就是TF1里面的函数越高的地方，对应的x就越容易被抽到
     }
     hist->Draw();
+
+    return hist;
 }
