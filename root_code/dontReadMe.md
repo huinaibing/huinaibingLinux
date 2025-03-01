@@ -1,10 +1,12 @@
 写这个readme.md完全是因为git不识别空文件夹，但是现在我要把它变成root笔记了
 
-> 本root代码为女娲root，搭载鸿蒙VScode、泰山编译器，搭配华山markdown，只供正直诚实的人使用
+> 本root代码只供正直诚实的人使用
 
 # root笔记（新）
-> 旧的去看我其他仓库
+> 旧的去看我其他仓库,当然那些仓库都是private的你看不到哈哈
+> 
 > [root的document官网，虽然看不懂](https://root.cern/doc/v632/)
+> 
 > [震惊！ 某人竟用短短一行代码将复杂的root代码简化得如此简单， 实现方法竟是这些](./XQY_Utils.h)
 
 ## 简单的脚本 对应root教程13
