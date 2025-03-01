@@ -16,7 +16,7 @@
 
 [draw_3.c 画线 保存成文件](./simple_script/draw_3.c)
 
-## 产生随机数
+## 产生随机数 对应教程14
 [random_test.c 产生简单的随机数， 种子问题](./rootTutorial14/random_test.c)
 
 [uniform_random.c 产生随机数并且填涂， 有多种分布](./rootTutorial14/uniform_random.c)
@@ -27,4 +27,4 @@
 
 [fit.md 使用鼠标操作去拟合函数](./rootTutorial14/fit.md)
 
-[simple_fit.c 使用代码拟合函数]()
+[simple_fit.c 使用代码拟合函数](./rootTutorial14/simple_fit.c)
