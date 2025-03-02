@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "string": "cpp"
+        "string": "cpp",
+        "xqy_utils.h": "c"
     }
 }
