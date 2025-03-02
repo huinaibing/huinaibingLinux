@@ -30,3 +30,8 @@
 [fit.md 使用鼠标操作去拟合函数](./rootTutorial14/fit.md)
 
 [simple_fit.c 使用代码拟合函数](./rootTutorial14/simple_fit.c)
+
+[gauss_2d.c 二维图形 以及二维图形的拟合](./rootTutorial14/gauss_2d.c)
+
+[uniform_eff.c 效率图 涉及文件的IO](./rootTutorial14/uniform_eff.c)
+> 25 03 02 由于不明白效率图意义，上面的部分未完善

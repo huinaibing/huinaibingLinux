@@ -3,16 +3,47 @@
 #ifndef XQY_Utils
 #define XQY_Utils
 
-TCanvas* get_simple_canvas()
-// 返回一个超级简单的canvas，大小700*500
+class LazyContainer
+// 显然，这是用于偷懒的一个类，包含th1d和canvas
+// 若想要加入更多的东西，继承就好了
+{
+    public:
+        TH1D* simple_th1d = NULL;
+        TCanvas* simple_canvas = NULL;
+        
+        LazyContainer()
+        {
+
+        }
+
+        LazyContainer(TCanvas* c1, TH1D* h1)
+        {
+            this->simple_th1d = h1;
+            this->simple_canvas = c1;
+        }
+
+        ~LazyContainer()
+        {
+            delete this->simple_th1d;
+            delete this->simple_canvas;
+        }
+
+};
+
+
+TCanvas* get_simple_canvas(int c_width=700, int c_height=500)
+// 返回一个超级简单的canvas，默认大小700*500
+// :params:
+//      :c_width: 横向长度
+//      :c_height: 纵向长度
 // :return: 指向该canvas的指针
 {
     return new TCanvas(
         std::to_string(gRandom->Integer(10000)).c_str(),
         // 随机生成一个id
         "simple_canvas",
-        700,
-        500
+        c_width,
+        c_height
     );
 }
 
@@ -50,4 +81,16 @@ TF1* get_gaus_fit(float st=0.0, float ed=0.0)
     );
 }
 
+LazyContainer* get_th1d_and_canvas(
+    int c_width=700, int c_height=500,
+    int binNum=100, int st=0, int ed=10
+)
+// 两个愿望一次满足
+{
+
+    return new LazyContainer(
+        get_simple_canvas(c_width, c_height),
+        get_simple_hist(binNum, st, ed)
+    );
+}
 #endif
