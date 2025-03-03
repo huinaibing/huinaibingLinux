@@ -1,3 +1,5 @@
+# 注意：若有LaTeX公式无法显示，就`git clone`后拿其他软件看
+
 > 以下总结来自ai
 
 ---
@@ -141,7 +143,95 @@ $$
 \end{align}
 $$
 
+其中$\sigma_X^{\gamma}$是光核截面（photonuclear）（这个光核截面是啥尚不清楚，猜测是一个核子发射的光子和另外一个核子碰撞的截面？）
+
+$\gamma \gamma \rightarrow X$这种过程可以用来探测*夸克结构或介子共振的自旋结构*，介子对、重子对的产生也可以探测强子的内部结构，在LHC这里会有$\gamma \gamma \rightarrow W^+ W^-$过程
+
 ![alt text](image-4.png)
+
+双光子过程的截面
+$$
+\begin{align}
+  \sigma_X = \int d\omega_1 d\omega_2 \frac{n(\omega_1)}{\omega_1}
+  \frac{n(\omega_2)}{\omega_2}
+  \sigma_X^{\gamma \gamma}(\omega_1 \omega_2) 
+\end{align}
+$$
+
+其中$\sigma_X^{\gamma \gamma}(\omega_1 \omega_2)$是双光子截面，这玩意和公式（1）长的很像，（**这个地方由于翻译问题，还需要确定一下它说的是哪个过程，看看后面的文章有没有讲清楚？**）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---
 
