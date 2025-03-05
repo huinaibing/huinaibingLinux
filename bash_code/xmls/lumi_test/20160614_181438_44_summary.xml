@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<summary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:noNamespaceSchemaLocation="$XMLSUMMARYBASEROOT/xml/XMLSummary.xsd">
+	<success>True</success>
+	<step>finalize</step>
+	<usage>
+		<stat unit="KB" useOf="MemoryMaximum">2016776.0</stat>
+	</usage>
+	<input>
+		<file GUID="" name="LFN:/lhcb/LHCb/Collision15/DIMUON.DST/00048460/0004/00048460_00043596_1.dimuon.dst" status="full">26076</file>
+		<file GUID="" name="LFN:/lhcb/LHCb/Collision15/DIMUON.DST/00048460/0000/00048460_00001005_1.dimuon.dst" status="full">33317</file>
+	</input>
+	<output />
+	<counters>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked FlavourTags">0</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked MuonPIDs">0</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked Particles">268815</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked ProtoParticles">0</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked RecVertices">23374</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked RichPIDs">0</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked Tracks">0</counter>
+		<counter name="Dimuon_PsAndVsUnpack/# Unpacked Vertices">107197</counter>
+		<counter name="unpackFittedVeloTracks/# Unpacked Tracks">9542323</counter>
+		<counter name="StdNoPIDsKaons/# Phys/StdAllNoPIDsKaons">3119072</counter>
+		<counter name="StdNoPIDsKaons/# input particles">3119072</counter>
+		<counter name="StdNoPIDsKaons/#accept">59086</counter>
+		<counter name="StdNoPIDsKaons/#passed">682773</counter>
+		<counter name="StdNoPIDsKaons/efficiency">682773</counter>
+		<counter name="StdAllNoPIDsKaons/#accept">59393</counter>
+		<counter name="ChargedProtoPAddMuon/Rec/Muon/MuonPID ==&gt; Rec/ProtoP/Charged">5127961</counter>
+		<counter name="ChargedProtoPAddRich/Rec/Rich/PIDs ==&gt; Rec/ProtoP/Charged">5127961</counter>
+		<counter name="ChargedProtoPCombDLL/CombineDLL ==&gt; Rec/ProtoP/Charged">5127961</counter>
+		<counter name="UnpackMuonPIDs/# UnPackedData">3261515</counter>
+		<counter name="UnpackTrack/# Unpacked Tracks">15675733</counter>
+		<counter name="UnpackRichPIDs/# UnPackedData">4746929</counter>
+		<counter name="UnpackMuonTracks/# Unpacked Tracks">9946</counter>
+		<counter name="L0DUFromRaw/L0DU RawBank Size (Bytes)">122760</counter>
+		<counter name="createITClusters/# banks found">41580</counter>
+		<counter name="createITClusters/# valid banks">41580</counter>
+		<counter name="createITClusters/skipped Banks">0</counter>
+		<counter name="createTTClusters/# banks found">47520</counter>
+		<counter name="createTTClusters/# valid banks">47520</counter>
+		<counter name="createTTClusters/skipped Banks">0</counter>
+		<counter name="Bu2JpsiK/# B+ -&gt; J/psi(1S)  K+">539</counter>
+		<counter name="Bu2JpsiK/# B- -&gt; J/psi(1S)  K-">560</counter>
+		<counter name="Bu2JpsiK/# Dimuon/Phys/FullDSTDiMuonJpsi2MuMuDetachedLine">19484</counter>
+		<counter name="Bu2JpsiK/# J/psi(1S)">19484</counter>
+		<counter name="Bu2JpsiK/# K+">267468</counter>
+		<counter name="Bu2JpsiK/# K-">261734</counter>
+		<counter name="Bu2JpsiK/# Phys/StdNoPIDsKaons">682773</counter>
+		<counter name="Bu2JpsiK/# input particles">702257</counter>
+		<counter name="Bu2JpsiK/# selected">1099</counter>
+		<counter name="Bu2JpsiK/#accept">990</counter>
+		<counter name="Bu2JpsiK/#pass combcut">16303</counter>
+		<counter name="Bu2JpsiK/#pass mother cut">1099</counter>
+		<counter name="Bu2JpsiK/Error from IParticleCombiner, skip the combination">85</counter>
+		<counter name="CheckPV/Events">990</counter>
+		<counter name="CheckPV/PVs">2104</counter>
+		<counter name="tuple/# Phys/Bu2JpsiK">1099</counter>
+		<counter name="tuple/# input particles">1099</counter>
+		<counter name="tuple/#accept">990</counter>
+		<counter name="tuple/Event">990</counter>
+		<counter name="CounterSummarySvc/handled">59397</counter>
+	</counters>
+	<lumiCounters>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PUMult">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/RZVelo">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/RZVeloBW">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/Velo">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/Muon">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/SPDMult">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/CaloEt">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/TTIP">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PV3D">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/Vertex">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/Random">-493664.0 493664.0 -493664.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonPUMult">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonRZVelo">505059.704769 493664.0 505059.704769</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonRZVeloBW">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonVelo">503513.161867 493664.0 503513.161867</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonMuon">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonSPDMult">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonCaloEt">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonTTIP">0.0 493664.0 0.0</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonPV3D">501680.324935 493664.0 501680.324935</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonVertex">501219.184637 493664.0 501219.184637</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/PoissonRandom">-1307794.27222 493664.0 -1307794.27222</statEntity>
+		<statEntity format="Flag Entries Flag2" max="0.0" min="0.0" name="IntegrateBeamCrossing/Luminosity">0.137149173991 1.0 0.00534881778564</statEntity>
+	</lumiCounters>
+</summary>
