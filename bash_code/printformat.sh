@@ -18,7 +18,16 @@ convert2oct()
 
     # 这里初始化一个空串，以方便后续的拼接，并且用一个tmp拷贝$1的值
     str=""
-    tmp=$1
+
+    # 这个if干的事情就是判断待处理数据是正数还是负数，
+    # 负数处理的时候要把负号提出去
+    Flag="+"
+    if [ $1 -lt 0 ]; then
+        tmp=$((0-$1))
+        Flag="-"
+    else
+        tmp=$1
+    fi
 
     while [ $tmp -ne 0 ]
     # 这个求八进制数的算法大家都知道，不赘述了
@@ -26,7 +35,7 @@ convert2oct()
         str="$(($tmp % 8))"$str
         tmp=$(($tmp / 8))
     done
-    echo "the num cvt2 oct is $str"
+    printf "the num cvrt2 oct is %s%s \n" $Flag $str
 }
 
 convert2hex()
@@ -35,7 +44,17 @@ convert2hex()
 {
     echo "convert to hex, origin num is $1"
     str=""
-    tmp=$1
+    Flag="+"
+
+    # 这个if干的事情就是判断待处理数据是正数还是负数，
+    # 负数处理的时候要把负号提出去
+    if [ $1 -lt 0 ]; then
+        tmp=$((0-$1))
+        Flag="-"
+    else
+        tmp=$1
+    fi
+
     while [ $tmp -ne 0 ]
     do
         rest_num="$(($tmp % 16))"
@@ -56,7 +75,7 @@ convert2hex()
         esac
         tmp=$(($tmp / 16))
     done
-    echo "the num cvt2 hex is $str"
+    printf "the num cvt2 hex is %s%s \n" $Flag $str
 }
 
 convert2sci()
@@ -65,7 +84,16 @@ convert2sci()
 {
     echo "convert2sci, origin number is $1"
 
-    tmp=$1
+    Flag="+"
+    # 这个if干的事情就是判断待处理数据是正数还是负数，
+    # 负数处理的时候要把负号提出去
+    if [ $1 -lt 0 ]; then
+        tmp=$((0-$1))
+        Flag="-"
+    else
+        tmp=$1
+    fi
+
     strlen=0
     while [ $tmp -ne 0 ]
     # 这个while用于计算字符串的长度
@@ -82,7 +110,11 @@ convert2sci()
 
     str=""
 
-    tmp=$1
+    if [ $1 -lt 0 ]; then
+        tmp=$((0-$1))
+    else
+        tmp=$1
+    fi
 
     exact_num=2
     # 这个是精确到小数点后几位
@@ -97,15 +129,16 @@ convert2sci()
         str=$str"${tmp:$i:1}"
     done
 
-    tmp=$1
-    echo -n "the num cvrt2 sci is " 
-    echo -n ${tmp:0:1}
-    echo -n ".$str X 10^" 
-    echo $(($strlen-1))
-
+    if [ $1 -lt 0 ]; then
+        tmp=$((0-$1))
+    else
+        tmp=$1
+    fi
+    printf "the num cvrt2 sci is %s%d.%s X 10^%d \n" $Flag ${tmp:0:1} $str $(($strlen-1))
 }
 
 case $1 in
+# 通过case去调用函数
     -o) # 转换8进制
         convert2oct $2
     ;;
