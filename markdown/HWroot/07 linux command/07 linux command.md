@@ -1,0 +1,7 @@
+![image-20250307202121881](./img/07%20linux%20command/image-20250307202121881.png)
+
+![image-20250307205522005](./img/07%20linux%20command/image-20250307205522005.png)
+
+结果
+
+![image-20250307205603764](./img/07%20linux%20command/image-20250307205603764.png)
