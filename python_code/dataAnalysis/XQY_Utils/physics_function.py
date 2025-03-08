@@ -1,5 +1,5 @@
 import math as m
-
+import numpy as np
 
 class PhysicsFunction:
     def __init__(self):
@@ -28,3 +28,22 @@ class PhysicsFunction:
         """
         return (func(x + dx) - func(x)) / dx
 
+    @staticmethod
+    def calculate_tmax(beta):
+        """
+        计算入射粒子很重，速度不大时的Tmax（详情见粒子探测技术电离能损）自然单位制
+        :param beta: 速度
+        :return: Tmax
+        """
+        gamma_squal = 1 / ( 1 - beta**2)
+        return 2 * 0.5 * beta**2 * gamma_squal 
+    
+    @staticmethod
+    def calculate_beta(particle_energy, particle_mass):
+        """
+        计算相对论粒子的速度
+        :param particle_energy: 能量
+        :param particle_mass: 静止质量
+        :return: beta速度（0-1）
+        """
+        return np.sqrt(1 - (particle_mass**2 / particle_energy**2))
