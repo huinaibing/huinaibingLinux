@@ -2,6 +2,7 @@
     "files.associations": {
         "string": "cpp",
         "xqy_utils.h": "c",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "iosfwd": "cpp"
     }
 }
