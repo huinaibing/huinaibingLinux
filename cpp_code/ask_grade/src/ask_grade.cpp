@@ -1,4 +1,4 @@
-#include<iostream>
+#include <iostream>
 
 using namespace std;
 
@@ -20,10 +20,3 @@ string ask_grade(int grade)
     }
 }
 
-int main()
-{
-    int grade;
-    cout << "input your grade" << endl;
-    cin >> grade;
-    cout << ask_grade(grade) << endl;
-}
