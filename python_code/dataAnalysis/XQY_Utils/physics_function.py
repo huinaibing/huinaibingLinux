@@ -48,3 +48,16 @@ class PhysicsFunction:
         :return: 导数的值
         """
         return (func(x + dx) - func(x)) / dx
+
+    @staticmethod
+    def fit(x, y, n):
+        K = np.zeros((n + 1, n + 1))
+        ks = [(x ** i).sum() for i in range(2 * n + 1)]
+        for i in range(n + 1):
+            for j in range(n + 1):
+                K[i][j] = ks[i + j]
+        b = np.zeros((n + 1, 1))
+        for i in range(n + 1):
+            b[i][0] = (y * x ** i).sum()
+
+        return np.linalg.inv(K) @ b
