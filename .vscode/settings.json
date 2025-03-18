@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "string": "cpp",
-        "xqy_utils.h": "c",
-        "iostream": "cpp",
-        "iosfwd": "cpp"
-    },
-    "cmake.sourceDirectory": "/home/huinaibing/huinaibingLinux/cpp_code/ask_grade"
-}
