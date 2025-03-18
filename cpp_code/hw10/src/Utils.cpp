@@ -5,8 +5,12 @@ float Utils::cvrt_Cel_2_Fah(float temper)
     return temper * 9 / 5 + 32;
 }
 
-template<class T1, class T2>
-double Utils::average(T1 a, T2 b)
+float Utils::average(long a, long b)
 {
-    return double((a + b) / 2)
+    return (a + b) / 2.0;
+}
+
+float Utils::average(float a, float b)
+{
+    return (a + b) / 2;
 }
