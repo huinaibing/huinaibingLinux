@@ -22,6 +22,7 @@ public:
     float calculate_inv_mass(float px, float py, float pz, float E);
     void calculate_inv_mass();
     void test_my_class();
+    float calculate_pt(float px, float py);
 };
 
 
