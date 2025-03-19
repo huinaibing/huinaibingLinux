@@ -9,7 +9,7 @@ using namespace std;
 
 class CalInvMass 
 {
-private:
+protected:
     ifstream* in;
     vector<vector<float>> datas;
     vector<float> data_inv_mass;
