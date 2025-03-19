@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
     NewCalInvMass* Ctrler = new NewCalInvMass(input_file_name);
 
-    // Ctrler->test_my_class();
+    Ctrler->divide_data_by_pt(40, 2, output_file_name);
 
     #ifdef __DEBUG__
     cout << "-----" << endl;
