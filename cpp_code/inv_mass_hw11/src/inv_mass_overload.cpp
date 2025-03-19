@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+
+// #define __DEBUG__
 using namespace std;
 
 
@@ -24,9 +26,22 @@ void NewCalInvMass::divide_data_by_pt(int range=40, int gap=2, const char* basen
     for (auto i: this->datas)
     {
         divider = this->calculate_pt(i[0], i[1]) / (gap * 1000);
+
+        if (divider >= range / gap)
+        {
+            continue;
+        }
+
+        #ifdef __DEBUG__
+        cout << divider << endl;
+        #endif
+
         *file_outers[divider] << this->calculate_inv_mass(i[0], i[1], i[2], i[3]) << endl;
     }
 
+    #ifdef __DEBUG__
+    cout << "------";
+    #endif
     for (ofstream* i: file_outers)
     // 关闭文件
     {
