@@ -9,7 +9,7 @@ int main()
     Ana_mass* mass_algo = new Ana_mass();
     Read_file* read_file = new Read_file();
 
-    ifstream input("DATA_FILES/data_input.txt");
+    ifstream input("../DATA_FILES/data_input.txt");
     vector<double> px_vec;
     vector<double> py_vec;
     vector<double> pz_vec;

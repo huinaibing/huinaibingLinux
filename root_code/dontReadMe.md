@@ -38,4 +38,7 @@
 
 ## TTree 对应教程15
 
-[简单的TTREE](./RootTutorial15/simple_TTree/)
+[简单的TTREE 注意，cmake的时候要手动加上root的library](./RootTutorial15/simple_TTree/CMakeLists.txt)
+
+[makeClass](./RootTutorial15/makeClass/makeClass.md)
+
