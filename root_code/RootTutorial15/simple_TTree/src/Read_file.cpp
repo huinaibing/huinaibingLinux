@@ -12,7 +12,7 @@ void Read_file::ReadFileToVector(
     {
         string name;
         double dpx, dpy, dpz, dpe;
-        input >> dpx >> dpy >> dpz >> dpe;
+        input >> name >> dpx >> dpy >> dpz >> dpe;
         px.push_back(dpx);
         py.push_back(dpy);
         pz.push_back(dpz);
