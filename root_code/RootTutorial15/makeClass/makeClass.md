@@ -3,3 +3,8 @@
 
 ![alt text](./img/image2.png)
 然后使用这个命令生成两个文件，注意这个tree叫myTuple
+
+> 在Loop这里写数据分析主程序
+> 然后怎么用？直接加载这个C文件即可，然后new一个class
+
+![alt text](./img/image3.png)

@@ -3,6 +3,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <iostream>
 
 void Myroot_class::Loop()
 {
@@ -38,6 +39,18 @@ void Myroot_class::Loop()
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
+      // 这个fChain指向TTree
+      // 使用上面这样的方法，告诉函数ID，
+      // TTree会把值给这个类的变量们
+      // 具体的看头文件定义
       // if (Cut(ientry) < 0) continue;
+
+      if (Mass > 5400)
+      {
+         std::cout << "Mass = " << Mass << std::endl;
+         std::cout << "这是事例的ID" << std::endl;
+         // 显然，上面这个for循环会遍历所有的事例
+      }
+
    }
 }
