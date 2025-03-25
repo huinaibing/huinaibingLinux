@@ -39,5 +39,16 @@ void advanced_class::Loop()
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
+
+      // 在这里填直方图
+      hist_mass->Fill(Mass);
+      
    }
+
+   // 把东西放入root文件中
+   // 这个cd()函数是用来切换目录的
+   // 如果目录不存在，就会自动创建
+   my_rootfile->cd();
+   hist_mass->Write();
+   my_rootfile->Close();
 }

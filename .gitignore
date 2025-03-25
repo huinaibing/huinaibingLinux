@@ -4,3 +4,6 @@
 **/DATA_FILE/
 **/footbook.ipynb
 .vscode
+**/*.root
+**/*.pdf
+**/.vscode/
