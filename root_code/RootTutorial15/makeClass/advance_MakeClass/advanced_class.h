@@ -116,6 +116,17 @@ void advanced_class::Init(TTree *tree)
    fChain->SetBranchAddress("Pz", &Pz, &b_Pz);
    fChain->SetBranchAddress("Pe", &Pe, &b_Pe);
    Notify();
+
+   // 我自己定义的变量的初始化
+   my_rootfile = new TFile("BEvents_skimmed_file.root", "RECREATE");
+   hist_mass = new TH1D("hist_mass", "hist_mass", 100, 5200, 5400);
+   hist_mass->Sumw2();
+   // 上面这个Sumw2()函数是用来开启直方图的错误计算的
+   // 直接在直方图初始化的时候调用这个函数就可以了
+   // 可以参考这个链接：https://root.cern/doc/master/classTH1.html#a
+   // 里面有一个关于Sumw2()的解释
+   // 卧槽，上面的注释是Ai生成的
+   // 我什么都没干，这也太夸张了把
 }
 
 bool advanced_class::Notify()
