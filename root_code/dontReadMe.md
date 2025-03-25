@@ -31,6 +31,10 @@
 
 [simple_fit.c 使用代码拟合函数](./rootTutorial14/simple_fit.c)
 
+![alt text](image.png)
+
+![alt text](image-1.png)
+
 [gauss_2d.c 二维图形 以及二维图形的拟合](./rootTutorial14/gauss_2d.c)
 
 [uniform_eff.c 效率图 涉及文件的IO](./rootTutorial14/uniform_eff.c)
