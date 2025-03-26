@@ -51,8 +51,8 @@ int main()
     // D代表double
     tree->Branch("Px", &bpx_tmp, "Px/D");
     tree->Branch("Py", &bpy_tmp, "Py/D");
-    tree->Branch("Pz", &bpy_tmp, "Pz/D");
-    tree->Branch("Pe", &bpy_tmp, "Pe/D");
+    tree->Branch("Pz", &bpz_tmp, "Pz/D");
+    tree->Branch("Pe", &bpe_tmp, "Pe/D");
 
     for (int i = 0; i < mass_vec.size(); i ++)
     {
