@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class DeepBase:
+class Util:
     def __init__(self):
         pass
 
@@ -15,7 +15,7 @@ class DeepBase:
 
     @staticmethod
     def swish(z):
-        return z * DeepBase.sigmoid(z)
+        return z * Util.sigmoid(z)
 
     @staticmethod
     def one_simple_layer(x, dim_in, dim_out, activation=swish):
