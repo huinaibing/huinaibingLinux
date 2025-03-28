@@ -9,7 +9,7 @@ class BasePredict:
         使用scikit learn中的算法进行预测
         :param x_train: 训练集的输入
         :param y_train: 训练目标，和y是一一对应
-        :param model: 模型，使用scikit learn里面的算法
+        :param model: 模型，使用scikit learn里面的算法，这个东西的类型是class
         """
         self.x_train = x_train
         self.y_train = y_train
