@@ -19,14 +19,14 @@ class PhysicsFunction:
         return 1 / m.sqrt(1 - beta ** 2)
 
     @staticmethod
-    def calculate_tmax(beta):
+    def calculate_tmax(beta, electron_mass=0.511):
         """
         计算入射粒子很重，速度不大时的Tmax（详情见粒子探测技术电离能损）自然单位制
         :param beta: 速度
-        :return: Tmax
+        :return: Tmax MeV
         """
         gamma_squal = 1 / (1 - beta ** 2)
-        return 2 * 0.5 * beta ** 2 * gamma_squal
+        return 2 * electron_mass * beta ** 2 * gamma_squal
 
     @staticmethod
     def calculate_beta(particle_energy, particle_mass):
@@ -61,3 +61,37 @@ class PhysicsFunction:
             b[i][0] = (y * x ** i).sum()
 
         return np.linalg.inv(K) @ b
+    
+    @staticmethod
+    def calculate_beta_from_momentum(inv_mass, momentum):
+        """
+        计算beta，用动量去算
+        """
+        return np.sqrt(momentum**2 / (momentum**2 + inv_mass**2))
+    
+    @staticmethod
+    def calculate_I(big_z):
+        """
+        计算I，就是那个BB公式里面的I
+        单位MeV
+        """
+        return 16 * big_z**0.9 * 1e-6
+    
+    @staticmethod
+    def calculate_BB_eq(small_z, big_z, big_a, beta):
+        """
+        计算BB公式
+        """
+        K = 0.3071 # K，公式前面那个，单位MeV*cm2/g
+        Tmax = PhysicsFunction.calculate_tmax(beta) # Tmax MeV
+        BB_I = PhysicsFunction.calculate_I(big_z) # I MeV
+        return K * small_z**2 * (big_z / big_a) * (1 / beta**2) * (np.log(Tmax / BB_I) - beta**2)
+    
+    @staticmethod
+    def calculate_delta_e(dedx, x, rho):
+        """
+        计算穿过一个介质后损耗能量
+        使用的时候注意单位
+        """
+        return dedx * rho * x
+    
