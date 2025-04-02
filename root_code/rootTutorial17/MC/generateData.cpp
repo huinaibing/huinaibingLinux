@@ -12,12 +12,14 @@
 #include "RooExponential.h"
 #include "RooAddPdf.h"
 #include "RooFitResult.h"
+#include "RooGamma.h"
 #include "RooPlot.h"
 #include "RooWorkspace.h"
 #include "RooMsgService.h"
 #include "RooRandom.h"
 #include "RooCategory.h"
 #include "RooFormulaVar.h"
+#include "RooDataSet.h"
 #include "RooCBShape.h"
 #include "RooHist.h"
 #include "RooHistPdf.h"
@@ -84,7 +86,7 @@ void generateData(int runType=0) {
     RooRealVar* pt = new RooRealVar("pt", "p_{T}", 0, 20000, "MeV");
 
     // 输出的文本文件
-    std::ofstream out("pseudoData.txt");
+    std::ofstream out("pseudoData.txt", std::ios::trunc);
 
     std::string output_name = "";
     if (runType == 0)
@@ -118,6 +120,7 @@ void geneSignal(RooRealVar* m, RooRealVar* pt, std::ofstream& out, int nsig)
 {
     std::cout << "call geneSignal()" << std::endl;
 
+    // 下面是质量的概率密度函数
     RooRealVar* CBL = new RooRealVar("CBL", "", 2.0);
     RooRealVar* CBR = new RooRealVar("CBR", "", 8.0);
 
@@ -128,4 +131,70 @@ void geneSignal(RooRealVar* m, RooRealVar* pt, std::ofstream& out, int nsig)
     RooRealVar* sigma = new RooRealVar("sigma", "sigma", 17.3);
 
     RooAbsPdf* signal = new MyCB("signal", "signal", *m, *mean, *sigma, *alpha_L, *CBL, *alpha_R, *CBR);
+    // --------------------
+
+    // 下面是pt的概率密度函数
+    RooRealVar* gamma = new RooRealVar("gamma", "gamma", 7);
+    RooRealVar* beta = new RooRealVar("beta", "beta", 1500.0);
+    RooRealVar* mu = new RooRealVar("mu", "mu", -4000);
+    RooGamma* sig_pt = new RooGamma("sig", "sig", *pt, *gamma, *beta, *mu);
+    // --------------------
+
+    // 根据pdf生成质量和pt的随机数
+    RooDataSet* gene_mass = signal->generate(*m, nsig);
+    RooDataSet* gene_pt = sig_pt->generate(*pt, nsig);
+    // --------------------
+
+    for (int i = 0; i < nsig; i++)
+    {
+        double v_mass = ((RooRealVar*)(gene_mass->get(i))->find("m"))->getVal();
+        double v_pt = ((RooRealVar*)(gene_pt->get(i))->find("pt"))->getVal();
+        out << v_mass << " " << v_pt << std::endl;
+    }
+    
+}
+
+
+void geneBackground(RooRealVar* m, RooRealVar* pt, std::ofstream& out, int n_gene)
+{
+    std::cout << "call geneBackground()" << std::endl;
+    
+    // 用指数函数产生背景
+    RooRealVar* c0 = new RooRealVar("c0", "", -0.002);
+    RooRealVar* c1 = new RooRealVar("c1", "", -0.0002);
+
+    RooExponential* bkg_m = new RooExponential("bkg_m", "bkg_m", *m, *c0);
+    RooExponential* bkg_pt = new RooExponential("bkg_pt", "bkg_pt", *pt, *c1);
+
+    RooDataSet* gene_mass = bkg_m->generate(*m, n_gene);
+    RooDataSet* gene_pt = bkg_pt->generate(*pt, n_gene);
+
+    for (int i = 0; i < n_gene; i++)
+    {
+        double v_mass = ((RooRealVar*)(gene_mass->get(i))->find("m"))->getVal();
+        double v_pt = ((RooRealVar*)(gene_pt->get(i))->find("pt"))->getVal();
+        out << v_mass << " " << v_pt << std::endl;
+    }
+}
+
+
+void convertToRoot(std::string txtfile, std::string rootfile, std::string treename)
+{
+    std::cout << "call convertToRoot()" << std::endl;
+    std::ifstream input(txtfile.c_str());
+    TFile* file_tmp = new TFile(rootfile.c_str(), "RECREATE");
+    TTree* new_tree = new TTree(treename.c_str(), treename.c_str());
+
+    double Mass, Pt;
+    new_tree->Branch("Mass", &Mass, "Mass/D");
+    new_tree->Branch("Pt", &Pt, "Pt/D");
+
+    while (input >> Mass >> Pt)
+    {
+        new_tree->Fill();
+    }
+    input.close();
+
+    file_tmp->Write();
+    file_tmp->Close();
 }
