@@ -7,3 +7,5 @@
 **/*.root
 **/*.pdf
 **/.vscode/
+**/*.pcm
+**/*.so
