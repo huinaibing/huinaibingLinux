@@ -31,9 +31,9 @@
 
 [simple_fit.c 使用代码拟合函数](./rootTutorial14/simple_fit.c)
 
-![alt text](image.png)
+![alt text](img/image.png)
 
-![alt text](image-1.png)
+![alt text](img/image-1.png)
 
 [gauss_2d.c 二维图形 以及二维图形的拟合](./rootTutorial14/gauss_2d.c)
 
@@ -46,3 +46,16 @@
 
 [makeClass](./RootTutorial15/makeClass/makeClass.md)
 
+## Root教程17
+
+> 16老师没有讲不管了
+
+[ROOFIT的使用 这是一个简单例子 如下所示，写完MyCB的h与CXX后就可以直接去编译，后续再去调用so文件](rootTutorial17/ROOFIT/fit_mass.cpp)
+
+![image-20250401152312751](./img/dontReadMe/image-20250401152312751.png)
+
+> 这个东西编译会产生一堆文件，建议复制一下去其他地方编译
+
+[使用蒙卡产生数据 并且拟合它 使用方法如下图](rootTutorial17/MC/generateData.cpp)
+
+![image-20250402151657754](./img/dontReadMe/image-20250402151657754.png)
