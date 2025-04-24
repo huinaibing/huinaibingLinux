@@ -3,7 +3,9 @@
 **/DATA_FILES/
 **/DATA_FILE/
 **/footbook.ipynb
-.vscode
+.vscode/
 **/*.root
 **/*.pdf
 **/.vscode/
+**/.idea/
+**/__pycache__/
