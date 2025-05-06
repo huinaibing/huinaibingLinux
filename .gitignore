@@ -9,3 +9,5 @@
 **/.vscode/
 **/.idea/
 **/__pycache__/
+**/*.pcm
+**/*.so
