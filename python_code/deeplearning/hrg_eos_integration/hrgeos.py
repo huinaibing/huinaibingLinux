@@ -65,9 +65,9 @@ class HrgEosIntegration:
         kmax = 50 * temper
         return quad(integral, 0, kmax)[0]
 
-    def eos(self, temper):
-        pressure = self.pressure_p(temper)
-        energy_density_e = self.energy_density_e(temper)
-        density_n = self.density_n(temper)
-
-        return pressure, energy_density_e, density_n
+    # def c_s_square(self, temper, dT=0.01):
+    #     return (
+    #             self.pressure_p(temper + dT) - self.pressure_p(temper)
+    #     ) / (
+    #             self.energy_density_e(temper + dT) - self.energy_density_e(temper)
+    #     )
