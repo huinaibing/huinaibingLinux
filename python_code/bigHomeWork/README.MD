@@ -12,9 +12,9 @@
 
 地球参考系如下，这里按照教材的来，z方向指向地心，在没有翻转的情况下，飞机参考系和地球一样
 
-![image-20250623202210527](./README/img/image-20250623202210527.png)
+![image-20250623202210527](./img/README/image-20250623202210527.png)
 
-![image-20250623202345090](./README/img/image-20250623202345090.png)
+![image-20250623202345090](./img/README/image-20250623202345090.png)
 
 ## 刚体旋转
 
@@ -72,7 +72,7 @@ $$
 
 > 所以，从vehicle参考系（和地球坐标轴一样方向的参考系）转到body参考系（刚体旋转后的参考系）变换如下
 >
-> ![image-20250623204202606](./README/img/image-20250623204202606.png)
+> ![image-20250623204202606](./img/README/image-20250623204202606.png)
 >
 > 如果我们想把一个body参考系的矢量转回vehicle参考系，***比如说body参考系下的升力***，由于旋转矩阵
 > $$
@@ -105,9 +105,9 @@ $$
 
 众所周之，刚体运动可以被分为平动加转动，分开进行分析
 
-在此之前，设升力正比于转速，如下图所示，数据来源于参考[5]
+在此之前，设升力正比于转速平方，如下图所示，数据来源于参考[5]
 
-![image-20250623194805261](./README/img/image-20250623194805261.png)
+![image-20250623194805261](./img/README/image-20250623194805261.png)
 
 
 
@@ -144,7 +144,7 @@ $$
 >
 > 1、3逆时针，2、4顺时针
 
-![image-20250623194901583](./README/img/image-20250623194901583.png)
+![image-20250623194901583](./img/README/image-20250623194901583.png)
 $$
 \begin{align}
 	I_x \dot\omega_x + (I_z - I_y)\omega_y\omega_z&=M_x
@@ -190,13 +190,27 @@ $$
 
 # Environment setup
 
+# 重要！！！我写了个pyproject.toml，需要安装一下
+
+> gymnasium version 1.1.1
+>
+> torch version 2.7.1+CPU(实验室Ubuntu24)
+
 ```bash
-# 安装pytorch
+# 安装pytorch和gymnasium
+# gymnasium是gym的升级版，不建议在用gym了
 # 命令仅供参考，可去官网查找安装命令
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+pip3 install gymnasium
+# 安装我的软件包
+cd /path/to/the/pyproject.toml
+pip3 install .
 ```
 
+
+
 # references
+
 [1] SCHULMAN J, FILIP W, DHARIWAL P, et al. Proximal policy optimization algorithms [J]. Machine Learning, 2017.
 
 [2] https://zh.wikipedia.org/wiki/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5
@@ -208,3 +222,5 @@ pip3 install torch torchvision torchaudio --index-url https://download.pytorch.o
 [5] https://blog.csdn.net/weixin_41869763/article/details/113853365
 
 [6] Beard R W. Quadrotor dynamics and control[J]. Brigham Young University, 2008, 19(3): 46-56.
+
+[7] https://gymnasium.farama.org/introduction/create_custom_env/
