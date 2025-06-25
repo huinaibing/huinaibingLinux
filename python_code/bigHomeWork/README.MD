@@ -113,10 +113,10 @@ $$
 
 ## 平动
 
-设四个旋翼的升力为F，方向朝z轴，如下，Drag为空气阻力，假设他正比于速度
+设四个旋翼的升力为F，方向朝-z轴，如下，Drag为空气阻力，假设他正比于速度
 $$
 \begin{align}
-	F_{body} &= \sum_{i=1}^4 F_i = \left[\begin{matrix}0 \\ 0 \\ T \end{matrix}\right]
+	F_{body} &= \sum_{i=1}^4 F_i = \left[\begin{matrix}0 \\ 0 \\ -T \end{matrix}\right]
 	\\
 	F_{lab} &= (R_v^{v1})^T (R_{v1}^{v2})^T (R_{v2}^b)^T F_{body}
 	\\
@@ -156,9 +156,9 @@ $$
 $$
 $$
 \begin{align}
-	M_x &= d(-T_2 + T_4) 
+	M_x &= d(T_2 - T_4) 
 	\\
-	M_y &= d(-T_3 + T_1)
+	M_y &= d(T_3 - T_1)
 	\\
 	M_z &= c(T_1+T_3 - T_2 - T_4)
 \end{align}

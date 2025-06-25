@@ -11,7 +11,7 @@ class Quadrotor:
     2. 计算无人机的受力
         - 这一部分是在参考系下做的，需要格外注意z轴取向向下
         - 受力、速度、角速度等等通通用这个坐标系，
-        - 但是位置感觉用不了，我会区别更新，注意这里！！！
+        - 位置也是！！所以在画图的时候比较麻烦！！！
     
         
     n. 和gym交互的api
@@ -61,6 +61,19 @@ class Quadrotor:
             ]
         ) # shape = (3, 1)
         # 速度使用z向下坐标系！
+
+        self.quad_omega = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["omegaXInit"]],
+                [env_cfg.environment_init_cfg["omegaYInit"]],
+                [env_cfg.environment_init_cfg["omegaZInit"]]
+            ]
+        ) # shape = (3, 1)
+        # 使用body参考系,这个是机体的角速度，和下面的旋翼角速度是两个玩意！！
+
+        self.Ixx = quad_cfg.quadrotor_cfg["Ixx"]  # kg*m^2, 转动惯量
+        self.Iyy = quad_cfg.quadrotor_cfg["Iyy"]  
+        self.Izz = quad_cfg.quadrotor_cfg["Izz"]  
 
         # 旋翼角速度
         # shape = (4,)
@@ -130,6 +143,31 @@ class Quadrotor:
         :return np.array: shape=(3, 1)
         """
         return -self.cD * self.velocity
+    
+    def get_Mx(self):
+        """
+        计算无人机的x的力矩
+        用的body参考系
+        :return float:
+        """
+        T1, T2, T3, T4 = self.get_lift_force_in_body()
+        return self.d * (T2 - T4)
+
+    def get_My(self):
+        """
+        计算y方向的My
+        :return float:
+        """
+        T1, T2, T3, T4 = self.get_lift_force_in_body()
+        return self.d * (T3 - T1)
+    
+    def get_Mz(self):
+        """
+        计算y方向的Mz
+        :return float:
+        """
+        T1, T2, T3, T4 = self.get_lift_force_in_body()
+        return self.cM * (T1 - T2 + T3 - T4)
     
     #
     # end：计算无人机的各种受力的部分

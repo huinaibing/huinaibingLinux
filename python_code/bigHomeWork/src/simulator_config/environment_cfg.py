@@ -38,4 +38,8 @@ environment_init_cfg = {
     "vxInit": 0.0, # 初始x速度, m/s
     "vyInit": 0.0, # 初始y速度
     "vzInit": 0.0, # 初始z速度
+
+    "omegaXInit": 0.0, # 初始x轴角速度, 参考系是body
+    "omegaYInit": 0.0, # 初始y轴角速度
+    "omegaZInit": 0.0, # 初始z轴角速度
 }
