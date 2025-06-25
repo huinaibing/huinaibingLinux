@@ -13,10 +13,11 @@ environment_cfg = {
     "zMin": 0.0, # z轴最小值
 
     # 避免万向节锁，限制各个角度
+    # 下面的角度范围配置除了theta的其他的最好别改，要不然我更新角度的代码完蛋了
     "psiMax": np.pi, # psi最大值
     "psiMin": -np.pi, # psi最小值
-    "thetaMax": np.pi / 2, # theta最大值
-    "thetaMin": -np.pi / 2, # theta最小值
+    "thetaMax": np.pi * 0.46, # theta最大值
+    "thetaMin": -np.pi *0.46, # theta最小值
     "phiMax": np.pi, # phi最大值
     "phiMin": -np.pi, # phi最小值
 

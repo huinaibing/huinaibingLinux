@@ -80,17 +80,18 @@ $$
 > $$
 > 所以很好处理，就是顺序别搞反
 
-
-
-为了避免万向节锁问题，这里规定
+这里为了避免奇点问题，规定
 $$
-    \psi \in [-180^\degree, 180^\degree]
-    \\
-    \theta \in [-90^\degree, 90^\degree]
-    \\
-    \phi \in [-180^\degree, 180^\degree]
-$$
+\psi \in [-180^\degree, 180^\degree]
 
+    \\
+
+   \theta \in [-85^\degree, 85^\degree]
+
+   \\
+
+  \phi \in [-180^\degree, 180^\degree]
+$$
 
 
 
@@ -188,6 +189,98 @@ $$
 $$
 至此，所有的变量都可以被迭代出来
 
+
+
+# 迭代状态(物理过程，强化学习迭代过程在后面)
+
+这里就用简单的迭代方法（显示欧拉法）
+
+> 如果theta迭代过了边界，则取得边界值（防止万向节锁和奇点）
+>
+> 另外两个角转换范围方法如下
+>
+> 1. 对2 * pi取余数
+> 2. 如果结果大于pi，减去2*pi
+
+平动
+$$
+\begin{align}
+	m\dot v &= F_{sum}
+	\\
+	v_{t+1} &= \dot v \cdot dt + v_t
+	\\
+	r_{t + 1} &= v_{t} \cdot dt + r_t
+\end{align}
+$$
+转动
+$$
+\begin{align}
+	\left[
+	\begin{matrix}
+		\phi_{t+1}
+		\\
+		\theta_{t+1}
+		\\
+		\psi_{t+1}
+	\end{matrix}
+	\right]
+	&= 
+	\left[
+	\begin{matrix}
+		\phi_{t}
+		\\
+		\theta_{t}
+		\\
+		\psi_{t}
+	\end{matrix}
+	\right]
+	+ 
+	dt \cdot
+	\left[
+	\begin{matrix}
+		\dot\phi
+		\\
+		\dot\theta
+		\\
+		\dot\psi
+	\end{matrix}
+	\right]
+	\\
+	
+	\left[
+	\begin{matrix}
+		\omega_x^{t+1}
+		\\
+		\omega_y^{t+1}
+		\\
+		\omega_z^{t+1}
+	\end{matrix}
+	\right]
+	&= 
+	\left[
+	\begin{matrix}
+		\omega_x^{t}
+		\\
+		\omega_y^{t}
+		\\
+		\omega_z^{t}
+	\end{matrix}
+	\right]
+	+ 
+	dt \cdot
+	\left[
+	\begin{matrix}
+		\dot\omega_x
+		\\
+		\dot\omega_y
+		\\
+		\dot\omega_z
+	\end{matrix}
+	\right]
+\end{align}
+$$
+
+
 # Environment setup
 
 # 重要！！！我写了个pyproject.toml，需要安装一下
@@ -209,6 +302,27 @@ pip3 install .
 
 
 
+# 改进
+
+1. 四元数迭代姿态避免奇点
+   $$
+   \begin{align*}
+   \mathbf{q}_{t+1} &= \mathbf{q}_t + \frac{dt}{2} \cdot \boldsymbol{\Omega}(\boldsymbol{\omega}_t) \mathbf{q}_t \\
+   \boldsymbol{\Omega}(\boldsymbol{\omega}) &= \begin{bmatrix}
+   0 & -\omega_x & -\omega_y & -\omega_z \\
+   \omega_x & 0 & \omega_z & -\omega_y \\
+   \omega_y & -\omega_z & 0 & \omega_x \\
+   \omega_z & \omega_y & -\omega_x & 0
+   \end{bmatrix}, \quad 
+   \mathbf{q} = \begin{bmatrix} q_w \\ q_x \\ q_y \\ q_z \end{bmatrix}
+   \end{align*}
+   $$
+   
+
+2. 显示欧拉法精度比较差，可换用更好方法
+
+3. 万向节锁问题，当theta为正负90度时会出现该问题，这里简单地把theta限制在85度以内，强制他无法迭代到奇点位置，同时避免万向节锁
+
 # references
 
 [1] SCHULMAN J, FILIP W, DHARIWAL P, et al. Proximal policy optimization algorithms [J]. Machine Learning, 2017.
@@ -224,3 +338,10 @@ pip3 install .
 [6] Beard R W. Quadrotor dynamics and control[J]. Brigham Young University, 2008, 19(3): 46-56.
 
 [7] https://gymnasium.farama.org/introduction/create_custom_env/
+
+
+
+
+
+
+

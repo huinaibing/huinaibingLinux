@@ -15,8 +15,17 @@ class Quadrotor:
     
         
     n. 和gym交互的api
+
+    需要在迭代训练中更新的：
+    1. 刚体姿态角
+    2. 刚体位置
+    3. 刚体平动速度
+    4. 刚体转动速度（body参考系）
     """
     def __init__(self):
+        # 时间步长
+        self.dt = env_cfg.dt
+
         # 无人机的参数
         self.mass = quad_cfg.quadrotor_cfg["mass"]
         self.gravity = quad_cfg.quadrotor_cfg["gravity"]
@@ -24,6 +33,9 @@ class Quadrotor:
         self.cT = quad_cfg.quadrotor_cfg["cT"] # 电机升力常数
         self.cM = quad_cfg.quadrotor_cfg["cM"] # 电机反扭矩常数
         self.cD = quad_cfg.quadrotor_cfg["cD"] # 空气阻力系数
+        self.Ixx = quad_cfg.quadrotor_cfg["Ixx"]  # kg*m^2, 转动惯量
+        self.Iyy = quad_cfg.quadrotor_cfg["Iyy"]  
+        self.Izz = quad_cfg.quadrotor_cfg["Izz"]  
 
         # 无人机姿态角的限制
         self.psi_max = env_cfg.environment_cfg["psiMax"]
@@ -42,7 +54,7 @@ class Quadrotor:
             ],
             dtype=np.float32
         ) # shape = (3, 1)
-        # 位置不使用那个z向下坐标系！！！！
+        # 位置也使用那个z向下坐标系！！！！
 
         self.angles = np.matrix(
             [
@@ -70,10 +82,6 @@ class Quadrotor:
             ]
         ) # shape = (3, 1)
         # 使用body参考系,这个是机体的角速度，和下面的旋翼角速度是两个玩意！！
-
-        self.Ixx = quad_cfg.quadrotor_cfg["Ixx"]  # kg*m^2, 转动惯量
-        self.Iyy = quad_cfg.quadrotor_cfg["Iyy"]  
-        self.Izz = quad_cfg.quadrotor_cfg["Izz"]  
 
         # 旋翼角速度
         # shape = (4,)
@@ -163,7 +171,7 @@ class Quadrotor:
     
     def get_Mz(self):
         """
-        计算y方向的Mz
+        计算z方向的Mz
         :return float:
         """
         T1, T2, T3, T4 = self.get_lift_force_in_body()
@@ -171,6 +179,26 @@ class Quadrotor:
     
     #
     # end：计算无人机的各种受力的部分
+    #
+
+    #########################################
+    # 状态的迭代（不包含和gym交互）
+    #
+    # 迭代的方程见README
+    #########################################
+
+    def iterate_translation_motion(self):
+        """
+        迭代速度和位置
+        """
+        fsum_lab = self.get_drag_lab() + self.get_gravity_lab() + self.get_f_lab()
+        vdot = fsum_lab / self.mass
+
+        self.location += self.velocity * self.dt
+        self.velocity += vdot * self.dt
+
+    #
+    # end: 状态的迭代（不包含和gym交互）
     #
     
     #########################################
