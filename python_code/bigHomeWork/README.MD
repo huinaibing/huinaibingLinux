@@ -81,16 +81,19 @@ $$
 > 所以很好处理，就是顺序别搞反
 
 这里为了避免奇点问题，规定
+
+> 如果theta超过这个边界，则判定失败
+
 $$
-\psi \in [-180^\degree, 180^\degree]
+\psi \in [-180\degree, 180\degree]
 
     \\
 
-   \theta \in [-85^\degree, 85^\degree]
+   \theta \in (-90\degree, 90\degree)
 
    \\
 
-  \phi \in [-180^\degree, 180^\degree]
+  \phi \in [-180\degree, 180\degree]
 $$
 
 
@@ -166,6 +169,9 @@ $$
 $$
 
 接下来，需要计算body坐标系的角速度和刚体姿态角的关系，直接看参考文献[6]的2.2节公式（8）
+
+> 这里会存在奇点问题
+
 $$
 \left(
 \begin{matrix}
@@ -195,7 +201,7 @@ $$
 
 这里就用简单的迭代方法（显示欧拉法）
 
-> 如果theta迭代过了边界，则取得边界值（防止万向节锁和奇点）
+> 如果theta迭代过了边界，则判定飞行失败
 >
 > 另外两个角转换范围方法如下
 >
@@ -287,7 +293,7 @@ $$
 
 > gymnasium version 1.1.1
 >
-> torch version 2.7.1+CPU(实验室Ubuntu24)
+> torch version 2.7.1+CPU(实验室Ubuntu24) 2.7.1+cu126(个人笔记本电脑)
 
 ```bash
 # 安装pytorch和gymnasium
@@ -318,10 +324,9 @@ pip3 install .
    \end{align*}
    $$
    
-
 2. 显示欧拉法精度比较差，可换用更好方法
 
-3. 万向节锁问题，当theta为正负90度时会出现该问题，这里简单地把theta限制在85度以内，强制他无法迭代到奇点位置，同时避免万向节锁
+3. 万向节锁问题，当theta为正负90度时会出现该问题
 
 # references
 
