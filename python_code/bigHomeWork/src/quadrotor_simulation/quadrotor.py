@@ -3,6 +3,7 @@ import simulator_config.environment_cfg as env_cfg
 import numpy as np
 from xqy_utils.xqy_utils import XQYUtils as utils
 
+
 class Quadrotor:
     """
     专门用来处理无人机仿真的类
@@ -22,6 +23,7 @@ class Quadrotor:
     3. 刚体平动速度
     4. 刚体转动速度（body参考系）
     """
+
     def __init__(self):
         # 时间步长
         self.dt = env_cfg.dt
@@ -29,13 +31,13 @@ class Quadrotor:
         # 无人机的参数
         self.mass = quad_cfg.quadrotor_cfg["mass"]
         self.gravity = quad_cfg.quadrotor_cfg["gravity"]
-        self.d = quad_cfg.quadrotor_cfg["d"] # 四旋翼臂长
-        self.cT = quad_cfg.quadrotor_cfg["cT"] # 电机升力常数
-        self.cM = quad_cfg.quadrotor_cfg["cM"] # 电机反扭矩常数
-        self.cD = quad_cfg.quadrotor_cfg["cD"] # 空气阻力系数
+        self.d = quad_cfg.quadrotor_cfg["d"]  # 四旋翼臂长
+        self.cT = quad_cfg.quadrotor_cfg["cT"]  # 电机升力常数
+        self.cM = quad_cfg.quadrotor_cfg["cM"]  # 电机反扭矩常数
+        self.cD = quad_cfg.quadrotor_cfg["cD"]  # 空气阻力系数
         self.Ixx = quad_cfg.quadrotor_cfg["Ixx"]  # kg*m^2, 转动惯量
-        self.Iyy = quad_cfg.quadrotor_cfg["Iyy"]  
-        self.Izz = quad_cfg.quadrotor_cfg["Izz"]  
+        self.Iyy = quad_cfg.quadrotor_cfg["Iyy"]
+        self.Izz = quad_cfg.quadrotor_cfg["Izz"]
 
         # 无人机姿态角的限制
         self.psi_max = env_cfg.environment_cfg["psiMax"]
@@ -49,11 +51,11 @@ class Quadrotor:
         self.location = np.matrix(
             [
                 [env_cfg.environment_init_cfg["xInit"]],
-                [env_cfg.environment_init_cfg["yInit"]], 
+                [env_cfg.environment_init_cfg["yInit"]],
                 [env_cfg.environment_init_cfg["zInit"]]
             ],
             dtype=np.float32
-        ) # shape = (3, 1)
+        )  # shape = (3, 1)
         # 位置也使用那个z向下坐标系！！！！
 
         self.angles = np.matrix(
@@ -63,7 +65,7 @@ class Quadrotor:
                 [env_cfg.environment_init_cfg["phiInit"]]
             ],
             dtype=np.float32
-        ) # shape = (3, 1)
+        )  # shape = (3, 1)
 
         self.velocity = np.matrix(
             [
@@ -71,7 +73,7 @@ class Quadrotor:
                 [env_cfg.environment_init_cfg["vyInit"]],
                 [env_cfg.environment_init_cfg["vzInit"]]
             ]
-        ) # shape = (3, 1)
+        )  # shape = (3, 1)
         # 速度使用z向下坐标系！
 
         self.quad_omega = np.matrix(
@@ -80,7 +82,7 @@ class Quadrotor:
                 [env_cfg.environment_init_cfg["omegaYInit"]],
                 [env_cfg.environment_init_cfg["omegaZInit"]]
             ]
-        ) # shape = (3, 1)
+        )  # shape = (3, 1)
         # 使用body参考系,这个是机体的角速度，和下面的旋翼角速度是两个玩意！！
 
         # 旋翼角速度
@@ -92,7 +94,7 @@ class Quadrotor:
     ########################################
     # 计算无人机的各种受力的部分
     ########################################
-    
+
     def get_lift_force_in_body(self):
         """
         获取无人机的每一个旋翼的力
@@ -111,7 +113,7 @@ class Quadrotor:
                 f_body[i] *= -1
 
         return f_body
-    
+
     def get_f_lab(self):
         """
         把升力转化到实验室坐标系
@@ -132,7 +134,7 @@ class Quadrotor:
         R_v2_b_T = utils.get_v2_b(self.angles[2, 0]).T
 
         return R_v_v1_T * R_v1_v2_T * R_v2_b_T * f_matrix_body
-    
+
     def get_gravity_lab(self):
         """
         算重力
@@ -144,14 +146,14 @@ class Quadrotor:
         gravity_lab = np.zeros((3, 1), dtype=np.float32)
         gravity_lab[2, 0] = self.mass * self.gravity
         return gravity_lab
-    
+
     def get_drag_lab(self):
         """
         空气阻力
         :return np.array: shape=(3, 1)
         """
         return -self.cD * self.velocity
-    
+
     def get_Mx(self):
         """
         计算无人机的x的力矩
@@ -168,7 +170,7 @@ class Quadrotor:
         """
         T1, T2, T3, T4 = self.get_lift_force_in_body()
         return self.d * (T3 - T1)
-    
+
     def get_Mz(self):
         """
         计算z方向的Mz
@@ -176,7 +178,7 @@ class Quadrotor:
         """
         T1, T2, T3, T4 = self.get_lift_force_in_body()
         return self.cM * (T1 - T2 + T3 - T4)
-    
+
     #
     # end：计算无人机的各种受力的部分
     #
@@ -197,10 +199,30 @@ class Quadrotor:
         self.location += self.velocity * self.dt
         self.velocity += vdot * self.dt
 
+    def iterate_rotation(self):
+        omegadot = np.zeros((3, 1), dtype=np.float32)
+        # omega x dot
+        omegadot[0, 0] = (
+                                 self.get_Mx() - (self.Izz - self.Iyy) * self.quad_omega[1, 0] * self.quad_omega[2, 0]
+                         ) / self.Ixx
+        # omega y dot
+        omegadot[1, 0] = (
+                                 self.get_My() - (self.Ixx - self.Izz) * self.quad_omega[2, 0] * self.quad_omega[0, 0]
+                         ) / self.Iyy
+        # omega z dot
+        omegadot[2, 0] = (
+                                 self.get_Mz() - (self.Iyy - self.Ixx) * self.quad_omega[0, 0] * self.quad_omega[1, 0]
+                         ) / self.Izz
+
+        # 更新无人机omega
+        self.quad_omega += self.dt * omegadot
+        # 更新姿态角
+        raise NotImplementedError
+
     #
     # end: 状态的迭代（不包含和gym交互）
     #
-    
+
     #########################################
     # 和gym交互的部分
     #########################################
@@ -210,7 +232,7 @@ class Quadrotor:
         获取无人机的状态
         给gym状态空间用的
         :return np.array: (x, y, z, psi, theta, phi) shape=(6,)
-        """    
+        """
         return np.concatenate(
             (self.location.flatten(), self.angles.flatten()),
             axis=0
