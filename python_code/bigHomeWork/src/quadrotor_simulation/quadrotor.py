@@ -322,6 +322,54 @@ class Quadrotor:
 
         return True
 
+    def reset_quadrotor(self):
+        """
+        重置无人机，使用初始的参数
+        """
+        # 时间=0的参数
+        self.location = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["xInit"]],
+                [env_cfg.environment_init_cfg["yInit"]],
+                [env_cfg.environment_init_cfg["zInit"]]
+            ],
+            dtype=np.float32
+        )  # shape = (3, 1)
+        # 位置也使用那个z向下坐标系！！！！
+
+        self.angles = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["psiInit"]],
+                [env_cfg.environment_init_cfg["thetaInit"]],
+                [env_cfg.environment_init_cfg["phiInit"]]
+            ],
+            dtype=np.float32
+        )  # shape = (3, 1)
+
+        self.velocity = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["vxInit"]],
+                [env_cfg.environment_init_cfg["vyInit"]],
+                [env_cfg.environment_init_cfg["vzInit"]]
+            ]
+        )  # shape = (3, 1)
+        # 速度使用z向下坐标系！
+
+        self.quad_omega = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["omegaXInit"]],
+                [env_cfg.environment_init_cfg["omegaYInit"]],
+                [env_cfg.environment_init_cfg["omegaZInit"]]
+            ]
+        )  # shape = (3, 1)
+        # 使用body参考系,这个是机体的角速度，和下面的旋翼角速度是两个玩意！！
+
+        # 旋翼角速度
+        # shape = (4,)
+        # shape和上面不一样！！！！！！！！！！！！！！
+        # 角速度如果为正数，代表升力向上（z轴负方向！！！）
+        self.omega = env_cfg.environment_init_cfg["omegaInit"]
+
     #
     # end：和gym交互的部分
     #

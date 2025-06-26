@@ -321,10 +321,12 @@ pip3 install .
    \mathbf{q} = \begin{bmatrix} q_w \\ q_x \\ q_y \\ q_z \end{bmatrix}
    \end{align*}
    $$
-   
+
 2. 显示欧拉法精度比较差，可换用更好方法
 
 3. 万向节锁问题，当theta为正负90度时会出现该问题
+
+   
 
 # references
 

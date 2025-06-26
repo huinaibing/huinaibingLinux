@@ -1,7 +1,7 @@
 ################################################
 #
 # 测试无人机类的bug
-# 显然我软件工程课没认真听讲，再者也没有足够时间做测试，这里随便测试一下就好
+# 显然没有足够时间做测试，这里随便测试一下就好
 #
 ################################################
 import numpy as np
@@ -71,7 +71,7 @@ def quadrotor_theta_test():
     ys = []
     zs = []
     thetas = []
-    quadrotor.set_omega(np.array([0, 500, 0, 0]))
+    quadrotor.set_omega(np.array([500, 500, 500, 0]))
 
     while quadrotor.move() is True:
         t += 1
@@ -81,6 +81,8 @@ def quadrotor_theta_test():
         ys.append(y)
         zs.append(z)
         thetas.append(theta)
+
+    print("time", t)
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

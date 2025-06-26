@@ -8,7 +8,7 @@ class XQYUtils:
     def get_R_v_v1(psi):
         """
         获取绕z轴旋转的旋转矩阵
-        :param psi: 旋转角度, 用pi表示（那个单位制叫啥我忘记了）
+        :param psi: 旋转角度, 用pi表示（rad)
         :return np.matrix: shape=(3, 3)
         """
         return np.matrix(
@@ -64,3 +64,10 @@ class XQYUtils:
                 [0, np.sin(phi) / np.cos(theta), np.cos(phi) / np.cos(theta)]
             ]
         )
+
+    @staticmethod
+    def calculate_distance(x1, y1, z1, x2, y2, z2):
+        """
+        计算直线距离的
+        """
+        return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)

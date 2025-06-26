@@ -1,7 +1,9 @@
+from typing import Optional
+
 import gymnasium as gym
 import numpy as np
 import simulator_config.environment_cfg as env_cfg
-import quadrotor_simulation.quadrotor as quadrotor
+from quadrotor_simulation.quadrotor import Quadrotor
 
 
 class QuadrotorEnv(gym.Env):
@@ -19,7 +21,15 @@ class QuadrotorEnv(gym.Env):
     def __init__(self):
         super().__init__()
         # 初始化四旋翼无人机
-        self.quadrotor = quadrotor.Quadrotor()
+        self.quadrotor = Quadrotor()
+
+        # 读取奖励数据
+        self.reward_point = env_cfg.environment_reward_cfg["rewardPoint"]
+        self.reward = env_cfg.environment_reward_cfg["reward"]
+        self.reward_radius = env_cfg.environment_reward_cfg["rewardRadius"]
+        self.reward_per_time = env_cfg.environment_reward_cfg["rewardPerTime"]
+        self.reward_truncate = env_cfg.environment_reward_cfg["rewardTruncate"]
+        self.reward_terminate = env_cfg.environment_reward_cfg["rewardTerminate"]
 
         # 设定obs space and action space
         # 也是从config读入
@@ -57,4 +67,47 @@ class QuadrotorEnv(gym.Env):
             ]),
             dtype=np.float32
         )
-        
+
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
+        """
+        环境重置函数
+        详情见gym参考文档
+        参数列出来是因为python的规范要不然pycharm报警
+        """
+        super().reset()
+        self.quadrotor.reset_quadrotor()
+        obs = self.quadrotor.get_state()
+        # 由于我们需要排除reward point,所以需要重置它
+        self.reward_point = env_cfg.environment_reward_cfg["rewardPoint"]
+
+        return obs, {}
+
+    def step(self, action: np.ndarray):
+        """
+        step函数，设置无人机的四个旋翼
+        """
+        # 奖励
+        # 每经过一个时间步，奖励减一
+        rwd = self.reward_per_time
+        assert action.shape == (4,)
+        self.quadrotor.set_omega(action)
+        # 我设置当无人机正常运行时返回true
+        # 又写反了。。。
+        # 设置截断（越界）的奖励
+        truncate = not self.quadrotor.move()
+        if truncate:
+            rwd += self.reward_truncate
+
+        for idx, point in enumerate(self.reward_point):
+            raise NotImplementedError
+
+
+
+
+        raise NotImplementedError
+        return self.quadrotor.get_state()
+
+    def get_reward(self):
+        """
+        如果无人机离奖励点距离小于指定值的时候，视为获得奖励
+        """

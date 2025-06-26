@@ -43,3 +43,12 @@ environment_init_cfg = {
     "omegaYInit": 0.0,  # 初始y轴角速度
     "omegaZInit": 0.0,  # 初始z轴角速度
 }
+
+environment_reward_cfg = {
+    "rewardPoint": [(5, 5, 15), (7, -8, 5), (-6, 0, 10)],  # 奖励点，坐标
+    "reward": 10000,  # 奖励的多少
+    "rewardRadius": 0.5,  # 距离奖励点在这个距离内视为获得奖励
+    "rewardPerTime": -1,  # 每经过一个时间步的奖励
+    "rewardTruncate": -10000,  # 截断（越界导致的）的奖励
+    "rewardTerminate": 5000,  # 正常截止（收集所有point）的奖励
+}
