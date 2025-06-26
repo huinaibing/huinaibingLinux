@@ -23,6 +23,25 @@ class Quadrotor:
     4. 刚体转动速度（body参考系）
     """
 
+    def self_check(self):
+        """
+        自我检查类
+        把自己的所有状态打印一遍，
+        方便我debug
+        """
+        print("--------state-------")
+        print("state", self.get_state())
+        print("-------force----------")
+        print("空气阻力", self.get_drag_lab())
+        print("升力", self.get_f_lab())
+        print("重力", self.get_gravity_lab())
+        print("-------velocity and omega-------")
+        print("平动", self.velocity)
+        print("转动", self.quad_omega)
+        print("--------机翼---------")
+        print("旋翼转速", self.omega)
+        print("---------------------")
+
     def __init__(self):
         # 时间步长
         self.dt = env_cfg.dt
@@ -266,9 +285,9 @@ class Quadrotor:
         :return np.array: (x, y, z, psi, theta, phi) shape=(6,)
         """
         return np.concatenate(
-            (self.location.flatten(), self.angles.flatten()),
-            axis=0
-        )
+            [self.location.flatten(), self.angles.flatten()],
+            axis=1
+        ).A1
 
     def set_omega(self, omega: np.array):
         """
@@ -294,8 +313,8 @@ class Quadrotor:
                 self.location[0, 0] < self.x_min or \
                 self.location[1, 0] > self.y_max or \
                 self.location[1, 0] < self.y_min or \
-                self.location[2, 0] > self.z_min or \
-                self.location[2, 0] < self.z_max:
+                self.location[2, 0] > self.z_max or \
+                self.location[2, 0] < self.z_min:
             return False
 
         if self.angles[1, 0] > self.theta_max or self.angles[1, 0] < self.theta_min:
