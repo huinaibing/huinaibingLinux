@@ -10,12 +10,22 @@ import matplotlib.pyplot as plt
 
 
 def quadrotor_shape_test():
+    # 进行向量维度测试和越界测试
     quadrotor = Quadrotor()
     assert quadrotor.quad_omega.shape == (3, 1)
     assert quadrotor.get_state().shape == (6,)
     assert quadrotor.location.shape == (3, 1)
     assert quadrotor.get_lift_force_in_body().shape == (4, )
     assert quadrotor.get_f_lab().shape == (3, 1)
+
+    quadrotor.angles[1, 0] = np.pi * 0.5
+    assert quadrotor.move() is False
+
+    quadrotor = Quadrotor()
+    quadrotor.location[0, 0] = 114514
+    assert quadrotor.move() is False
+
+    print("0 shape Errors")
 
 
 def quadrotor_simple_test():
