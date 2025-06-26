@@ -15,14 +15,14 @@ environment_cfg = {
     # 下面的角度范围配置最好别改，要不然我更新角度的代码完蛋了
     "psiMax": np.pi,  # psi最大值
     "psiMin": -np.pi,  # psi最小值
-    "thetaMax": np.pi,  # theta最大值
-    "thetaMin": -np.pi,  # theta最小值
+    "thetaMax": np.pi * 0.48,  # theta最大值 防止他迭代到90度导致奇点
+    "thetaMin": -np.pi * 0.48,  # theta最小值
     "phiMax": np.pi,  # phi最大值
     "phiMin": -np.pi,  # phi最小值
 
     # 动作空间的限制
     "omegaMax": 1000.0,  # 旋翼最大角速度, rad/s
-    "omegaMin": -1000.0,  # 旋翼最小角速度
+    "omegaMin": 0,  # 旋翼最小角速度
 }
 
 environment_init_cfg = {

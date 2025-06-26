@@ -53,12 +53,10 @@ class XQYUtils:
     def get_convert_omegaxyz_to_psithetaphi_dot(phi, theta):
         """
         计算从刚体的body角速度到姿态角导数的矩阵
-        这里要和README上的矩阵不太一样
-        因为我class里面的angle顺序摆反了！！！！！！！！！！！！！！！
+        我class里面的angle顺序摆反了！！！！！！！！！！！！！！！
         QAQ
         :return np.matrix: shape=(3, 3)
         """
-        raise NotImplementedError
         return np.matrix(
             [
                 [1, np.sin(phi) * np.tan(theta), np.cos(phi) * np.tan(theta)],
