@@ -1,0 +1,25 @@
+# 安装的设置文件
+[project]
+name = "quadrotorSimulator"
+version = "0.1.0"
+authors = [
+    {name = "Qiuyu Xia", email = "huinaibing@mails.ccnu.edu.cn"}
+]
+dependencies = [
+    "numpy",
+    "torch",
+    "gymnasium"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+ 
+[tool.ruff]
+line-length = 119
+indent-width = 4
+ 
+[tool.ruff.format]
+docstring-code-format = true
+skip-magic-trailing-comma = false
+line-ending = "auto"
