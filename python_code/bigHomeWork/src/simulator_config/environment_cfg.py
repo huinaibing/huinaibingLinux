@@ -46,7 +46,7 @@ environment_init_cfg = {
 
 environment_reward_cfg = {
     "rewardPoint": [(5, 5, 15), (7, -8, 5), (-6, 0, 10)],  # 奖励点，坐标
-    "reward": 10000,  # 奖励的多少
+    "reward": 10000,  # 达到指定目标点时的奖励的多少
     "rewardRadius": 0.5,  # 距离奖励点在这个距离内视为获得奖励
     "rewardPerTime": -1,  # 每经过一个时间步的奖励
     "rewardTruncate": -10000,  # 截断（越界导致的）的奖励

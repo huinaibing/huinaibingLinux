@@ -1,9 +1,11 @@
+import copy
 from typing import Optional
 
 import gymnasium as gym
 import numpy as np
 import simulator_config.environment_cfg as env_cfg
 from quadrotor_simulation.quadrotor import Quadrotor
+import xqy_utils.xqy_utils as utils
 
 
 class QuadrotorEnv(gym.Env):
@@ -87,7 +89,7 @@ class QuadrotorEnv(gym.Env):
         step函数，设置无人机的四个旋翼
         """
         # 奖励
-        # 每经过一个时间步，奖励减一
+        # 每经过一个时间步，奖励减少
         rwd = self.reward_per_time
         assert action.shape == (4,)
         self.quadrotor.set_omega(action)
@@ -98,16 +100,27 @@ class QuadrotorEnv(gym.Env):
         if truncate:
             rwd += self.reward_truncate
 
+        tmp = []
         for idx, point in enumerate(self.reward_point):
-            raise NotImplementedError
+            # 如果point和当前位置的距离小于指定半径的话，
+            # 获得奖励，并且删除该点
+            if utils.XQYUtils.calculate_distance(
+                    self.quadrotor.location[0, 0],
+                    self.quadrotor.location[1, 0],
+                    self.quadrotor.location[2, 0],
+                    point[0],
+                    point[1],
+                    point[2]
+            ) < self.reward_radius:
+                rwd += self.reward
+            else:
+                tmp.append(point)
 
+        self.reward_point = copy.deepcopy(tmp)
 
+        if len(self.reward_point) == 0:
+            terminate = True
+        else:
+            terminate = False
 
-
-        raise NotImplementedError
-        return self.quadrotor.get_state()
-
-    def get_reward(self):
-        """
-        如果无人机离奖励点距离小于指定值的时候，视为获得奖励
-        """
+        return self.quadrotor.get_state(), rwd, terminate, truncate, {}
