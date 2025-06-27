@@ -4,9 +4,79 @@
 
 ![alt text](./img/problem.png)
 
+
+
+# 结果展示
+
+图中，蓝色点为目标，红色线为无人机飞行路径
+
+由于航空专业喜欢使用z轴朝地心，故这里使用同样坐标系
+
+可以看到，目标点设置为**在其周围一定距离**就视为通过无人机，无人机可飞过两个目标点，第三个目标点较为困难
+
+![image-20250627204609552](./img/README/image-20250627204609552.png)
+
+
+
+下图为训练曲线**（tensorboard）**
+
+图一为每次训练的时长，可以看到，智能体在训练中，飞往目标点的平均速度变快，耗时减少
+
+图二为训练的reward，可以看到，智能体通过训练，获得的reward在逐步上升
+
+![image-20250627205051062](./img/README/image-20250627205051062.png)
+
+
+
+# 项目结构
+
+![image-20250627211204964](./img/README/image-20250627211204964.png)
+
+- img: 存储本README的图片的文件夹
+- logs：训练过程中的日志文件，记录了每次训练的信息
+- models：训练的模型，也包括了训练参数
+- src：源文件
+  - gym_env:强化学习环境设置，使用gymnasium的接口
+  - quadrotor_simulation：无人机仿真
+  - simulator_config:配置文件，如果需要更改环境参数需要修改这里
+  - xqy_test：测试代码，用于debug，可以忽略
+  - xqy_utils：工具类，包含各种通用代码
+- .gitignore
+- main.ipynb：用于训练强化学习模型的notebook,虽然它叫main，但是大部分代码都不在这
+- **pyproject.toml：安装信息文件**，非常重要，如果不安装将无法使用
+- README.MD：您正在读的文件
+
+
+
+# Environment setup 重要！！！我写了个pyproject.toml，需要安装一下
+
+```bash
+# 安装pytorch和gymnasium
+# 除了pytorch建议自己安装以外
+# 其他的软件包会在pip install .的时候自动安装
+# 如果dependences写漏了的话，请自行补上缺失软件
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+# 安装我的软件包
+cd /path/to/the/pyproject.toml
+pip3 install .
+```
+
+
+
+# 如何使用我的代码复现训练
+
+请在安装完项目后，打开main.ipynb
+
+1. 修改simulator_config下的配置
+2. `cd /path/to/the/pyproject.toml && pip install .`
+3. 修改run_id（在4号单元格，**如果不修改的话会把训练好的文件覆盖**）
+
+
+
 # 运动方程求解
 
-# 这一部分的公式见Quadrotor Dynamics and Control，Randal W. Beard，Brigham Young University，参考[6]，我可能没写详细，详细请看这本讲义
+这一部分的公式见Quadrotor Dynamics and Control，Randal W. Beard，Brigham Young University，参考[6]，我可能没写详细，详细请看这本讲义
 
 ## 参考系
 
@@ -285,28 +355,46 @@ $$
 $$
 
 
-# Environment setup
 
-# 重要！！！我写了个pyproject.toml，需要安装一下
+# 强化学习算法
 
-> gymnasium version 1.1.1
->
-> torch version 2.7.1+CPU(实验室Ubuntu24) 2.7.1+cu126(个人笔记本电脑)
+这里使用SAC，soft actor critic
 
-```bash
-# 安装pytorch和gymnasium
-# gymnasium是gym的升级版，不建议在用gym了
-# 命令仅供参考，可去官网查找安装命令
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
-pip3 install gymnasium
-# 安装我的软件包
-cd /path/to/the/pyproject.toml
-pip3 install .
-```
+*以下内容摘自我的本科毕设*
 
 
 
-# 改进
+## 马尔可夫决策过程
+
+马尔可夫决策过程（英语：Markov decision process，MDP）是离散时间随机控制过程。它提供了一个数学框架，用于在结果部分随机且部分受决策者控制的情况下对决策建模[9]。MDP 被定义为一个四元组(S A P R) ，其中,S A 为集合，分别包含一系列状态和动作，,P R 为, ,s sprime a的函数，代表采取动作a 后，从状态s 转移到sprime的概率以及奖励。在 MDP 中，决策者在某一个时间点会看到某个状态 s，决策者可以自由决定自己所要采取的动作 a，在采取该动作后，状态会根据状态转移函数 P 转移到一个新的状态，转移到某个状态的概率由该函数给定，在完成状态转移之后，决策者会根据奖励函数 R 获得奖励，以此循环往复直到结束。MDP 的一个重要性质即为当前过程的状态转移和奖励与历史的状态动作无关，在实际问题中我们常常简单地认为历史状态动作不会影响当前的状态转移与奖励，以便将实际问题建模为 MDP。
+
+![image-20250627220018944](./img/README/image-20250627220018944.png)
+
+
+
+## 强化学习
+
+强化学习是指在智能体与环境交互的过程中，智能体的某些行为会因为应用“强化操作符”的结果而在未来变得更多或者更少。强化操作符只是从已经发生的行为中选择训练者喜欢的那部分。因此，该过程包含一个智能体，它产生各种行为，与环境互动，以及一个训练者，他决定如何使用强化操作符[9]。强化学习来源于心理学中有机体和环境的交互的理论，后来人们受到其启发，使用计算机模拟心理学过程，加以神经网络的理论，逐渐发展出了如今的强化学习理论。一个简单的强化学习例子是：智能体在时刻 t 观察到了环境状态为 s，根据智能体自己的某种判断策略，采用动作 a，在下一个时刻环境因为智能体的动作 a，转移到了状态 s'，训练者根据环境的变化是否让其满意，给与智能体奖励或惩罚。显然，强化学习过程是马尔可夫决策过程。
+
+
+
+## SAC
+
+SAC算法是Actor-critic架构，即策略网络用于指导智能体执行动作（actor），价值网络用于改进actor网络（critic）；SAC使用的是随机策略，相对于固定策略，能探索状态的更多解法，理论上学到的策略可以适应更为复杂的环境。SAC在优化目标中加入了熵函数，使得输出的动作的不确定性增大，熵函数的定义为：
+
+​            ![img](./img/README/clip_image002.gif)    
+
+ 其中p(x)为随机变量X的分布，其意义是鼓励智能体多加探索，避免算法陷入局部最优解而导致无法继续调优，增强模型的性能，以及增强模型的鲁棒性。下图为SAC算法的伪代码。
+
+|      |                                        |
+| ---- | -------------------------------------- |
+|      | ![img](./img/README/clip_image004.gif) |
+
+这里使用stable baseline3这个库直接调用算法
+
+
+
+# 展望
 
 1. 四元数迭代姿态避免奇点
    $$
@@ -324,7 +412,13 @@ pip3 install .
 
 2. 显示欧拉法精度比较差，可换用更好方法
 
-3. 万向节锁问题，当theta为正负90度时会出现该问题
+3. 万向节锁问题，当theta为正负90度时会出现该问题，这里简单地判定当其越界时训练truncated，但是如果我们想使用特技飞行无人机的时候（倒着开飞机），必须面对这个问题
+
+4. 训练参数的优化，这里可以加更多的reward机制，以帮助达到训练目标；reward的大小也是一个值得深究的问题
+
+5. 可以使用更多的强化学习模型
+
+6. 无人机的位置和姿态角、旋翼位置存在对称性，可以尝试使用Van der Pol E, Worrall D, van Hoof H, et al. Mdp homomorphic networks: Group symmetries in reinforcement learning[J]. Advances in Neural Information Processing Systems, 2020, 33: 4199-4210. 这个文献中的方法去优化训练
 
    
 
@@ -344,9 +438,8 @@ pip3 install .
 
 [7] https://gymnasium.farama.org/introduction/create_custom_env/
 
+[8] Haarnoja T, Zhou A, Abbeel P, et al. Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor[C]//International conference on machine learning. Pmlr, 2018: 1861-1870.
 
+[9] Minsky M. Steps toward artificial intelligence[J]. Proceedings of the IRE, 1961, 49(1): 8-30.
 
-
-
-
-
+[10] Bellman R. A Markovian decision process[J]. Journal of mathematics and mechanics, 1957: 679-684.
