@@ -9,7 +9,9 @@ dependencies = [
     "numpy",
     "torch",
     "gymnasium",
-    "matplotlib"
+    "matplotlib",
+    "stable_baselines3",
+    "tensorboard"
 ]
 
 [build-system]

@@ -13,9 +13,8 @@ class Quadrotor:
         - 这一部分是在参考系下做的，需要格外注意z轴取向向下
         - 受力、速度、角速度等等通通用这个坐标系，
         - 位置也是！！所以在画图的时候比较麻烦！！！
-    
-        
-    n. 和gym交互的api
+    3. 迭代计算（显示欧拉法）
+    4. 和gym交互的api
 
     需要在迭代训练中更新的：
     1. 刚体姿态角
@@ -23,6 +22,25 @@ class Quadrotor:
     3. 刚体平动速度
     4. 刚体转动速度（body参考系）
     """
+
+    def self_check(self):
+        """
+        自我检查类
+        把自己的所有状态打印一遍，
+        方便我debug
+        """
+        print("--------state-------")
+        print("state", self.get_state())
+        print("-------force----------")
+        print("空气阻力", self.get_drag_lab())
+        print("升力", self.get_f_lab())
+        print("重力", self.get_gravity_lab())
+        print("-------velocity and omega-------")
+        print("平动", self.velocity)
+        print("转动", self.quad_omega)
+        print("--------机翼---------")
+        print("旋翼转速", self.omega)
+        print("---------------------")
 
     def __init__(self):
         # 时间步长
@@ -46,6 +64,14 @@ class Quadrotor:
         self.theta_min = env_cfg.environment_cfg["thetaMin"]
         self.phi_max = env_cfg.environment_cfg["phiMax"]
         self.phi_min = env_cfg.environment_cfg["phiMin"]
+
+        # 无人机位置限制
+        self.x_max = env_cfg.environment_cfg["xMax"]
+        self.y_max = env_cfg.environment_cfg["yMax"]
+        self.z_max = env_cfg.environment_cfg["zMax"]
+        self.x_min = env_cfg.environment_cfg["xMin"]
+        self.y_min = env_cfg.environment_cfg["yMin"]
+        self.z_min = env_cfg.environment_cfg["zMin"]
 
         # 时间=0的参数
         self.location = np.matrix(
@@ -214,10 +240,35 @@ class Quadrotor:
                                  self.get_Mz() - (self.Iyy - self.Ixx) * self.quad_omega[0, 0] * self.quad_omega[1, 0]
                          ) / self.Izz
 
+        # 备份无人机t时刻的omega
+        omega_tmp = np.copy(self.quad_omega)
         # 更新无人机omega
         self.quad_omega += self.dt * omegadot
         # 更新姿态角
-        raise NotImplementedError
+        # 注意这里，本class里面的迭代方程和README里面的迭代方程符号位置写反了。。。
+        # 所以得换个位置
+        anglesdot_reversed = utils.get_convert_omegaxyz_to_psithetaphi_dot(
+            self.angles[2, 0], self.angles[1, 0]
+        ) * omega_tmp
+
+        # 上面的公式算出来的是phi theta psi的顺序，但是这个类里面是psi theta phi，
+        # QAQ，写反了，只能将错就错，再反转过去
+        tmp = anglesdot_reversed[0, 0]
+        anglesdot_reversed[0, 0] = anglesdot_reversed[2, 0]
+        anglesdot_reversed[2, 0] = tmp
+
+        # 更新角度
+        self.angles += self.dt * anglesdot_reversed
+
+        # 对phi和psi做越界回正
+        # 但是不对theta做，因为theta越界直接失败
+        self.angles[0, 0] %= 2 * np.pi
+        if self.angles[0, 0] > np.pi:
+            self.angles[0, 0] -= 2 * np.pi
+
+        self.angles[2, 0] %= 2 * np.pi
+        if self.angles[2, 0] > np.pi:
+            self.angles[2, 0] -= 2 * np.pi
 
     #
     # end: 状态的迭代（不包含和gym交互）
@@ -234,9 +285,9 @@ class Quadrotor:
         :return np.array: (x, y, z, psi, theta, phi) shape=(6,)
         """
         return np.concatenate(
-            (self.location.flatten(), self.angles.flatten()),
-            axis=0
-        )
+            [self.location.flatten(), self.angles.flatten()],
+            axis=1
+        ).A1
 
     def set_omega(self, omega: np.array):
         """
@@ -253,7 +304,71 @@ class Quadrotor:
         记得先set_omega再move!!!!!!!!!!!!
         记得先set_omega再move!!!!!!!!!!!!
         记得先set_omega再move!!!!!!!!!!!!
+        这里需要做越界检查，如果越界返回false
+        :return bool: 越界后返回false，一般返回true
         """
+        self.iterate_translation_motion()
+        self.iterate_rotation()
+        if self.location[0, 0] > self.x_max or \
+                self.location[0, 0] < self.x_min or \
+                self.location[1, 0] > self.y_max or \
+                self.location[1, 0] < self.y_min or \
+                self.location[2, 0] > self.z_max or \
+                self.location[2, 0] < self.z_min:
+            return False
+
+        if self.angles[1, 0] > self.theta_max or self.angles[1, 0] < self.theta_min:
+            return False
+
+        return True
+
+    def reset_quadrotor(self):
+        """
+        重置无人机，使用初始的参数
+        """
+        # 时间=0的参数
+        self.location = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["xInit"]],
+                [env_cfg.environment_init_cfg["yInit"]],
+                [env_cfg.environment_init_cfg["zInit"]]
+            ],
+            dtype=np.float32
+        )  # shape = (3, 1)
+        # 位置也使用那个z向下坐标系！！！！
+
+        self.angles = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["psiInit"]],
+                [env_cfg.environment_init_cfg["thetaInit"]],
+                [env_cfg.environment_init_cfg["phiInit"]]
+            ],
+            dtype=np.float32
+        )  # shape = (3, 1)
+
+        self.velocity = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["vxInit"]],
+                [env_cfg.environment_init_cfg["vyInit"]],
+                [env_cfg.environment_init_cfg["vzInit"]]
+            ]
+        )  # shape = (3, 1)
+        # 速度使用z向下坐标系！
+
+        self.quad_omega = np.matrix(
+            [
+                [env_cfg.environment_init_cfg["omegaXInit"]],
+                [env_cfg.environment_init_cfg["omegaYInit"]],
+                [env_cfg.environment_init_cfg["omegaZInit"]]
+            ]
+        )  # shape = (3, 1)
+        # 使用body参考系,这个是机体的角速度，和下面的旋翼角速度是两个玩意！！
+
+        # 旋翼角速度
+        # shape = (4,)
+        # shape和上面不一样！！！！！！！！！！！！！！
+        # 角速度如果为正数，代表升力向上（z轴负方向！！！）
+        self.omega = env_cfg.environment_init_cfg["omegaInit"]
 
     #
     # end：和gym交互的部分
