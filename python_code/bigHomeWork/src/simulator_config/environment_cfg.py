@@ -4,10 +4,10 @@ import numpy as np
 dt = 0.001  # s, 时间步长
 
 environment_cfg = {
-    "xMax": 10.0,  # x轴最大值, m
-    "xMin": -10.0,  # x轴最小值
-    "yMax": 10.0,  # y轴最大值
-    "yMin": -10.0,  # y轴最小值
+    "xMax": 5.0,  # x轴最大值, m
+    "xMin": -5.0,  # x轴最小值
+    "yMax": 5.0,  # y轴最大值
+    "yMin": -5.0,  # y轴最小值
     "zMax": 20.0,  # z轴最大值
     "zMin": 0.0,  # z轴最小值
 
@@ -21,7 +21,7 @@ environment_cfg = {
     "phiMin": -np.pi,  # phi最小值
 
     # 动作空间的限制
-    "omegaMax": 1000.0,  # 旋翼最大角速度, rad/s
+    "omegaMax": 1500.0,  # 旋翼最大角速度, rad/s
     "omegaMin": 0,  # 旋翼最小角速度
 }
 
@@ -33,7 +33,7 @@ environment_init_cfg = {
     "thetaInit": 0.0,  # 初始theta角度
     "phiInit": 0.0,  # 初始phi角度
 
-    "omegaInit": np.array([500.0, 500.0, 500.0, 500.0]),  # 初始旋翼角速度
+    "omegaInit": np.array([750.0, 750.0, 750.0, 750.0]),  # 初始旋翼角速度
 
     "vxInit": 0.0,  # 初始x速度, m/s
     "vyInit": 0.0,  # 初始y速度
@@ -45,10 +45,11 @@ environment_init_cfg = {
 }
 
 environment_reward_cfg = {
-    "rewardPoint": [(5, 5, 15), (7, -8, 5), (-6, 0, 10)],  # 奖励点，坐标
-    "reward": 10000,  # 达到指定目标点时的奖励的多少
-    "rewardRadius": 0.5,  # 距离奖励点在这个距离内视为获得奖励
-    "rewardPerTime": -1,  # 每经过一个时间步的奖励
-    "rewardTruncate": -10000,  # 截断（越界导致的）的奖励
-    "rewardTerminate": 5000,  # 正常截止（收集所有point）的奖励
+    "rewardPoint": [(1, 2, 10), (3, 3, 7), (3, 0, 14)],  # 奖励点，坐标
+    "reward": 300,  # 达到指定目标点时的奖励的多少
+    "rewardRadius": 1,  # 距离奖励点在这个距离内视为获得奖励
+    "rewardPerTime": -0.01,  # 每经过一个时间步的奖励，这个数值会乘上距离，以引导无人机前往目标点
+    "rewardTruncate": -400,  # 截断（越界导致的）的奖励
+    "rewardTerminate": 400,  # 正常截止（收集所有point）的奖励
+    "rewardTheta": -0.01  # 稳定性奖励，越不稳定扣除越多
 }

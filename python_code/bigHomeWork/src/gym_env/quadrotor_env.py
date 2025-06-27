@@ -32,6 +32,7 @@ class QuadrotorEnv(gym.Env):
         self.reward_per_time = env_cfg.environment_reward_cfg["rewardPerTime"]
         self.reward_truncate = env_cfg.environment_reward_cfg["rewardTruncate"]
         self.reward_terminate = env_cfg.environment_reward_cfg["rewardTerminate"]
+        self.reward_theta = env_cfg.environment_reward_cfg["rewardTheta"]
 
         # 设定obs space and action space
         # 也是从config读入
@@ -52,7 +53,7 @@ class QuadrotorEnv(gym.Env):
                 env_cfg.environment_cfg["thetaMax"],
                 env_cfg.environment_cfg["phiMax"],
             ]),
-            dtype=np.float32
+            dtype=np.float64
         )
         self.action_space = gym.spaces.Box(
             low=np.array([
@@ -67,7 +68,7 @@ class QuadrotorEnv(gym.Env):
                 env_cfg.environment_cfg["omegaMax"],
                 env_cfg.environment_cfg["omegaMax"],
             ]),
-            dtype=np.float32
+            dtype=np.float64
         )
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
@@ -89,8 +90,7 @@ class QuadrotorEnv(gym.Env):
         step函数，设置无人机的四个旋翼
         """
         # 奖励
-        # 每经过一个时间步，奖励减少
-        rwd = self.reward_per_time
+        rwd = 0
         assert action.shape == (4,)
         self.quadrotor.set_omega(action)
         # 我设置当无人机正常运行时返回true
@@ -101,22 +101,32 @@ class QuadrotorEnv(gym.Env):
             rwd += self.reward_truncate
 
         tmp = []
+        distances = []
         for idx, point in enumerate(self.reward_point):
             # 如果point和当前位置的距离小于指定半径的话，
             # 获得奖励，并且删除该点
-            if utils.XQYUtils.calculate_distance(
-                    self.quadrotor.location[0, 0],
-                    self.quadrotor.location[1, 0],
-                    self.quadrotor.location[2, 0],
-                    point[0],
-                    point[1],
-                    point[2]
-            ) < self.reward_radius:
+            dis = utils.XQYUtils.calculate_distance(
+                self.quadrotor.location[0, 0],
+                self.quadrotor.location[1, 0],
+                self.quadrotor.location[2, 0],
+                point[0],
+                point[1],
+                point[2]
+            )
+            distances.append(dis)
+            if dis < self.reward_radius:
                 rwd += self.reward
             else:
                 tmp.append(point)
 
         self.reward_point = copy.deepcopy(tmp)
+
+        # 每经过一个时间步，扣除奖励
+        # 离最近目标点越近，扣除的越少
+        rwd += self.reward_per_time * min(distances) ** 2
+
+        # 扣除稳定性奖励
+        rwd += self.reward_theta * self.quadrotor.angles[1, 0] ** 2
 
         if len(self.reward_point) == 0:
             terminate = True
