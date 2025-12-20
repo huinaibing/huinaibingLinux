@@ -19,14 +19,15 @@ void draw_pid_v2ptcorr_together()
     TH1D *h_pr = (TH1D *)file_pr->Get("v2ptcorre_mean");
 
     TCanvas *c = new TCanvas("c", "c", 1800, 1000);
+    TH2D *frame = new TH2D("frame", "v_{2} - p_{T} Correlation for #pi, K, p", 100, 0, 100, 100, 0, 0.3);
+    frame->GetXaxis()->SetTitle("centrality (%)");
+    frame->GetYaxis()->SetTitle("#rho(v_{2}, p_{T})");
+    frame->SetStats(0);
+    frame->Draw();
     h_pi->SetLineColor(kRed);
     h_pi->SetMarkerColor(kRed);
     h_pi->SetMarkerStyle(20);
-    h_pi->SetTitle("v_{2} - p_{T} Correlation for #pi, K, p");
-    h_pi->GetXaxis()->SetTitle("centrality (%)");
-    h_pi->GetYaxis()->SetTitle("#rho(v_{2}, p_{T})");
-    h_pi->SetStats(0);
-    h_pi->Draw("PE");
+    h_pi->Draw("PE same");
     h_ka->SetLineColor(kBlue);
     h_ka->SetMarkerColor(kBlue);
     h_ka->SetMarkerStyle(21);

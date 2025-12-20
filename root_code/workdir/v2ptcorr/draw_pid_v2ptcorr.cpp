@@ -36,7 +36,7 @@ double calculate_var(double pid_charged_c22, double pid_charged_c24, double char
 
 void draw_pid_v2ptcorr_main(const char *poi, const char *title, const char *output_name = "v2ptcorrelation_kaon.root")
 {
-    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults.root");
+    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_data_tr578329.root");
     TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
     TDirectory *dir = (TDirectory *)dir_main->Get(poi);
 

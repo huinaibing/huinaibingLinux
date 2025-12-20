@@ -7,7 +7,8 @@
 #include "TGraphErrors.h"
 #include "GFWWeights.h"
 
-void vnsp(){
+void vnsp()
+{
   // TFile *myFile1 = TFile::Open("NUAREF.root");
   // if (!myFile1 || myFile1->IsZombie()){
   //   return;
@@ -29,7 +30,7 @@ void vnsp(){
   int Nruns = 8;
   // int runlist[1] = {544013};                                                           // for zzf
   // int runlist[2] = {544028, 544032};                                                   // for zzg
-  int runlist[8] = {544124, 544095, 544098, 544116, 544121, 544122, 544123, 544124};   // for zzh
+  int runlist[8] = {544095, 544098, 544116, 544121, 544122, 544123, 544124, 544091}; // for zzh
   // int runlist[6] = {544184, 544185, 544389, 544390, 544391, 544392};                   // for zzi
   // int runlist[16] = {544451, 544454, 544474, 544475, 544476, 544477, 544490, 544491,
   //                    544492, 544508, 544510, 544511, 544512, 544514, 544515, 544518};  // for zzk
@@ -61,43 +62,53 @@ void vnsp(){
   //   545047, 545063, 545064, 545066, 545185, 545210, 545223, 545249,
   //   545291, 545294, 545295, 545296, 545312
   // };
-  TString Particle[3] = {"REF",/* "K0s", "Lambda", "Xi", "Omega"*/};
+  TString Particle[3] = {"REF",
+                         /* "K0s", "Lambda", "Xi", "Omega"*/};
   TString dataset[9] = {"251204"};
 
   // int Nruns = 1;
   // int runlist[7] = {544124};
 
-  GFWWeights* fWeightsREF = nullptr;
-  for (int iDataset = 1; iDataset <= 1; iDataset++) {
+  GFWWeights *fWeightsREF = nullptr;
+  for (int iDataset = 1; iDataset <= 1; iDataset++)
+  {
     TFile *input_file = TFile::Open(Form("AnalysisResults_%s.root", dataset[iDataset - 1].Data()));
-    if (!input_file || input_file->IsZombie()){
+    if (!input_file || input_file->IsZombie())
+    {
       return;
     }
-    for (int iSpecies = 1; iSpecies <= 1; iSpecies++) {
-      for (int run = 1; run <= Nruns; run++) {
+    for (int iSpecies = 1; iSpecies <= 1; iSpecies++)
+    {
+      for (int run = 1; run <= Nruns; run++)
+      {
 
         TH3D *NUA = nullptr;
         if (iSpecies == 1)
           input_file->GetObject(Form("flow-gfw-omega-xi/%d/hPhiEtaVtxz;1", runlist[run - 1]), NUA);
         else
           input_file->GetObject(Form("flow-gfw-omega-xi/%d/hPhiEtaVtxz%s;1", runlist[run - 1], Particle[iSpecies - 1].Data()), NUA);
-        
-        if (NUA == nullptr) {
+
+        if (NUA == nullptr)
+        {
           delete NUA;
           continue;
         }
 
         TFile *output_file = nullptr;
-        output_file = new TFile(Form("%s/NUA%s_%d.root", Particle[iSpecies - 1].Data(), Particle[iSpecies - 1].Data(), runlist[run - 1]),"RECREATE","");
+        output_file = new TFile(Form("%s/NUA%s_%d.root", Particle[iSpecies - 1].Data(), Particle[iSpecies - 1].Data(), runlist[run - 1]), "RECREATE", "");
         GFWWeights WeightsREF = GFWWeights("ccdb_object");
         fWeightsREF = &WeightsREF;
         fWeightsREF->init(true, false);
-        
-        if (runlist[run - 1] == 544813) {
-          cout<<"check"<<endl;
-          for (int phibin = 1; phibin <= 60; phibin++) {
-            for(int etabin = 1; etabin <= 64; etabin++) {
-              for(int vtxzbin = 1; vtxzbin <= 40; vtxzbin++) {
+
+        if (runlist[run - 1] == 544813)
+        {
+          cout << "check" << endl;
+          for (int phibin = 1; phibin <= 60; phibin++)
+          {
+            for (int etabin = 1; etabin <= 64; etabin++)
+            {
+              for (int vtxzbin = 1; vtxzbin <= 40; vtxzbin++)
+              {
                 double weight = 100000;
                 // double err = NUA->GetBinError(phibin, etabin, vtxzbin);
                 double phiuse = NUA->GetXaxis()->GetBinCenter(phibin);
@@ -109,9 +120,12 @@ void vnsp(){
             }
           }
         }
-        for (int phibin = 1; phibin <= 60; phibin++) {
-          for(int etabin = 1; etabin <= 64; etabin++) {
-            for(int vtxzbin = 1; vtxzbin <= 40; vtxzbin++) {
+        for (int phibin = 1; phibin <= 60; phibin++)
+        {
+          for (int etabin = 1; etabin <= 64; etabin++)
+          {
+            for (int vtxzbin = 1; vtxzbin <= 40; vtxzbin++)
+            {
               double weight = NUA->GetBinContent(phibin, etabin, vtxzbin);
               // double err = NUA->GetBinError(phibin, etabin, vtxzbin);
               double phiuse = NUA->GetXaxis()->GetBinCenter(phibin);
@@ -134,7 +148,6 @@ void vnsp(){
     delete input_file;
   }
 
-  
   // TFile *input_file = TFile::Open("1.root");
   // if (!input_file || input_file->IsZombie()){
   //   return;
@@ -150,8 +163,6 @@ void vnsp(){
   // TFile *output_file = nullptr;
   // output_file = new TFile("NUE1.root","RECREATE","");
   // NUE->Write();
-
-
 
   return;
 }
