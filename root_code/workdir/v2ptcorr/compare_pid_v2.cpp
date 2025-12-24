@@ -22,7 +22,7 @@ using namespace std;
 
 void compare_pid_v2()
 {
-    TFile *file = TFile::Open("/home/huinaibing/Downloads/AnalysisResults_12_7_OO.root");
+    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_data_small.root");
 
     TDirectory *dir = (TDirectory *)file->Get("pid-flow-pt-corr");
     TProfile *h_charged_v2 = (TProfile *)dir->Get("c22");
@@ -72,7 +72,7 @@ void compare_pid_v2()
         pure_pr->SetBinContent(i, sqrt(pr_v2));
     }
 
-    TFile *file_output = TFile::Open("compare_pid_v2__12_7_OO.root", "RECREATE");
+    TFile *file_output = TFile::Open("compare_pid_big_v2.root", "RECREATE");
 
     TCanvas *c1 = new TCanvas("c1", "c1", 1800, 1000);
     ratio_pi->SetStats(0);
