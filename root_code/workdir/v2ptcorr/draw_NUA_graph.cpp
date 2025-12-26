@@ -37,7 +37,7 @@ void draw_NUA_graph()
         {
             for (int binEta = 1; binEta <= 40; binEta++)
             {
-                for (int binVz = 1; binVz <= 40; binVz++)
+                for (int binVz = 1; binVz <= 20; binVz++)
                 {
                     double weight = grh->GetBinContent(new int[4]{idxRun + 1, binPhi, binEta, binVz});
                     // double err = NUA->GetBinError(binPhi, binEta, binVz);

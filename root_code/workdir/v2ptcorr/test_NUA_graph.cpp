@@ -18,10 +18,9 @@ void test_NUA_graph()
 
     TH1D *hPhi = new TH1D("hPhi", "", 60, 0, 2 * TMath::Pi());
     // loop all the runList
-    for (int idxRun = 0; idxRun < 8; idxRun++)
+    for (int idxRun = 6; idxRun < 7; idxRun++)
     {
-        if (idxRun != 2 && idxRun != 4)
-            continue;
+
         // for each run, create a file
 
         // end create file
