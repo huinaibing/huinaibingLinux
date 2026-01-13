@@ -5,43 +5,31 @@
 #include "TCanvas.h"
 #include "THn.h"
 #include <iostream>
+#include "GFWWeights.h"
 
 void test_NUA_graph()
 {
-    // get graph
-    int runlist[8] = {544095, 544098, 544116, 544121, 544122, 544123, 544124, 544091}; // for zzh
-    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_data_tr578329.root");
-    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
-    TDirectory *correction = (TDirectory *)dir_main->Get("correction");
-    THnSparseF *grh = (THnSparseF *)correction->Get("hRunNumberPhiEtaVertex");
-    // end graph
+    TFile *file = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/corrections_pass3/NUA_544122.root");
+    GFWWeights *th3 = (GFWWeights *)file->Get("ccdb_object");
+    fstream o("log_NUA.txt", ios::out);
+    TH3D *h_wacc = new TH3D("h_acc", "h_acc", 60, 0, 2 * TMath::Pi(), 64, -1.6, 1.6, 40, -10, 10);
 
-    TH1D *hPhi = new TH1D("hPhi", "", 60, 0, 2 * TMath::Pi());
-    // loop all the runList
-    for (int idxRun = 6; idxRun < 7; idxRun++)
+    for (int j = 1; j <= 64; j++)
     {
-
-        // for each run, create a file
-
-        // end create file
-
-        // loop the thnd NUA and fill the fWeight
-        for (int binPhi = 1; binPhi <= 60; binPhi++)
+        for (int k = 1; k <= 40; k++)
         {
-            double sumation = 0;
-            for (int binEta = 1; binEta <= 40; binEta++)
+            for (int i = 1; i <= 60; i++)
             {
-                for (int binVz = 1; binVz <= 40; binVz++)
-                {
-                    double weight = grh->GetBinContent(new int[4]{idxRun + 1, binPhi, binEta, binVz});
-                    sumation += weight;
-                }
+                double phi = h_wacc->GetXaxis()->GetBinCenter(i);
+                double eta = h_wacc->GetYaxis()->GetBinCenter(j);
+                double vz = h_wacc->GetZaxis()->GetBinCenter(k);
+                h_wacc->SetBinContent(i, j, k, th3->getNUA(phi, eta, vz));
+                o << phi << " " << eta << " " << vz << " " << th3->getNUA(phi, eta, vz) << endl;
             }
-            hPhi->SetBinContent(binPhi, hPhi->GetBinContent(binPhi) + sumation);
         }
-        // end loop the thnd NUA and fill the fWeight
     }
-    TCanvas *c1 = new TCanvas("c1", "c1", 800, 600);
-    hPhi->Draw();
-    // end loop all the runlist
+
+    TCanvas *c1 = new TCanvas("c1", "c1", 1800, 1000);
+    h_wacc->Draw();
+    o.close();
 }

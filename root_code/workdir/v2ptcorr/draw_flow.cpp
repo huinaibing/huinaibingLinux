@@ -13,7 +13,7 @@ using namespace std;
 
 void draw_flow()
 {
-    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_data_small.root");
+    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_PASS3.root");
     TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
     TProfile *h_charged_c22 = (TProfile *)dir_main->Get("c22");
     TH2D *frame = new TH2D("1", "", 200, 0, 70, 100, 0, 0.15);

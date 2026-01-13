@@ -12,10 +12,10 @@
 using namespace std;
 void draw_corrolation_v2pt()
 {
-    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/AnalysisResults_data_small.root");
-    TDirectory *dir = (TDirectory *)file->Get("pid-flow-pt-corr");
+    TFile *file = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pass5small_corrected_right_id44149.root");
+    TDirectory *dir = (TDirectory *)file->Get("pid-flow-pt-corr_id44149");
 
-    TProfile *h_cov_v2pt_diffpt = (TProfile *)dir->Get("covV2Pt_diffpt"); // 对应代码块1
+    TProfile *h_cov_v2pt_diffpt = (TProfile *)dir->Get("covV2Pt"); // 对应代码块1
     TProfile *h_ptAve = (TProfile *)dir->Get("ptAve");
     TProfile *h_ptSquareAve = (TProfile *)dir->Get("ptSquareAve");
     TProfile *h_c22 = (TProfile *)dir->Get("c22");
@@ -92,6 +92,7 @@ void draw_corrolation_v2pt()
         tmp->Draw();
         tmp->GetXaxis()->SetTitle("cent %");
         tmp->GetYaxis()->SetTitle("#rho(v2,pt)");
+        tmp->GetYaxis()->SetRangeUser(0, 0.3);
         c2->SetFillColorAlpha(0, 0);
         v2pt_run2->Draw("P SAME");
         TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
@@ -120,7 +121,7 @@ void draw_corrolation_v2pt()
 
         TLine *line = new TLine(0, 1.0, 60, 1.0);
 
-        TH2D *frame1 = new TH2D("2", "", 200, 0, 60, 100, 0.3, 1.8);
+        TH2D *frame1 = new TH2D("2", "", 200, 0, 60, 100, 0.3, 3);
         frame1->SetStats(0);
         frame1->GetXaxis()->SetTitle("cent %");
         frame1->GetYaxis()->SetTitle("run2(#rho) / run3");
