@@ -10,7 +10,7 @@
 #include "TLine.h"
 #include "FlowContainer.h"
 
-#define FILE "/home/huinaibing/Downloads/AnalysisResults_bootstrap_test.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/fc_correction_ncls3_closegoodits.root"
 
 // #define DEBUG
 
@@ -76,7 +76,7 @@ void draw_v2pt_correlation()
 {
     // init and get prof
     TFile *f = TFile::Open(FILE);
-    TDirectory *dir = (TDirectory *)f->Get("pid-flow-pt-corr");
+    TDirectory *dir = (TDirectory *)f->Get("pid-flow-pt-corr_less_its_ncls_id44937");
     FlowContainer *fc_ch = (FlowContainer *)dir->Get("FlowContainerCharged");
     TProfile2D *h_prof_ch = fc_ch->GetProfile();
     TObjArray *arr = fc_ch->GetSubProfiles();
@@ -113,6 +113,20 @@ void draw_v2pt_correlation()
 
     // draw
     TCanvas *c2 = new TCanvas("c2", "c2", 1800, 1000);
-    res->Draw();
+    TFile *data_run2 = TFile::Open("/home/huinaibing/Downloads/run2v2ptcorr.root");
+    TDirectory *dir_run2 = (TDirectory *)data_run2->Get("Table 1");
+    TGraphErrors *v2pt_run2 = (TGraphErrors *)dir_run2->Get("Graph1D_y1");
+
+    TH2D *frame = new TH2D("frame", "v2pt correlation;Centrality (%);#rho(v_{2}^{2}{2}, p_{T})", 10, 0, 100, 10, 0, 0.3);
+    frame->SetStats(0);
+    frame->Draw();
+
+    res->SetLineColor(kRed);
+    res->Draw("SAME");
+    v2pt_run2->Draw("P SAME");
+    TLegend *leg = new TLegend(0.6, 0.7, 0.88, 0.88);
+    leg->AddEntry(res, "run 3", "lep");
+    leg->AddEntry(v2pt_run2, "run 2", "lep");
+    leg->Draw("SAME");
     // end draw
 }

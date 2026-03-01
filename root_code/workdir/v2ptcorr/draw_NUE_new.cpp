@@ -8,7 +8,7 @@
 #include "TH2.h"
 #include <iostream>
 
-#define MC_PATH "/home/huinaibing/Documents/datas4o2/AnalysisResults_mc_579410.root"
+#define MC_PATH "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pteff.root"
 
 void draw_NUE_new()
 {
@@ -22,7 +22,7 @@ void draw_NUE_new()
     hRec->Divide(hGen);
 
     // save
-    TFile *out = new TFile("corrections/Eff.root", "RECREATE");
+    TFile *out = new TFile("correction_new/pass5_zzh_Eff.root", "RECREATE");
     hRec->SetTitle("efficiency");
     hRec->SetName("ccdb_object");
     hRec->GetXaxis()->SetTitle("p_{T} GeV");

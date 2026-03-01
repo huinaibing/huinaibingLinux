@@ -116,13 +116,13 @@ namespace util4fc
     }
 }
 
-#define FILE "/home/huinaibing/Downloads/AnalysisResults_bootstrap_test.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/fc_correction_ncls3_closegoodits.root"
 
-void draw_pid_v2pt_correlation_main(const char *fc_name)
+TH1D *draw_pid_v2pt_correlation_main(const char *fc_name)
 {
     // open file and get flow containers
     TFile *file = TFile::Open(FILE);
-    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
+    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr_less_its_ncls_id44937");
     FlowContainer *fc_pid = (FlowContainer *)dir_main->Get(fc_name);
     FlowContainer *fc_ch = (FlowContainer *)dir_main->Get("FlowContainerCharged");
     TObjArray *arr_ch = fc_ch->GetSubProfiles();
@@ -150,21 +150,49 @@ void draw_pid_v2pt_correlation_main(const char *fc_name)
         }
     }
 
-    for (int i = 0; i < error4eachbin.size(); i ++)
+    for (int i = 0; i < error4eachbin.size(); i++)
     {
         double stddev = TMath::Sqrt(error4eachbin[i] / (nsub - 1));
         res->SetBinError(i + 1, stddev);
     }
     // end get value and error
 
-    // draw
-    TCanvas *c2 = new TCanvas("c2", "c2", 1800, 1000);
-    res->Draw();
-    // end draw
-}
+    // // draw
+    // TCanvas *c2 = new TCanvas("c2", "c2", 1800, 1000);
+    // res->Draw();
+    // // end draw
 
+    // store into file
+    TFile *file_output = TFile::Open(Form("v2ptcorrelation_%s.root", fc_name), "RECREATE");
+    res->Write();
+    file_output->Close();
+    // end store into file
+
+    return res;
+}
 
 void draw_pid_v2pt_correlation()
 {
-    draw_pid_v2pt_correlation_main("FlowContainerPi");
+    TH1D *res_pi = draw_pid_v2pt_correlation_main("FlowContainerPi");
+    TH1D *res_ka = draw_pid_v2pt_correlation_main("FlowContainerKa");
+    TH1D *res_pr = draw_pid_v2pt_correlation_main("FlowContainerPr");
+
+    TH2D *frame = new TH2D("frame", "v2pt correlation for PID particle;Centrality (%);#rho(v_{2}^{2}{2}, p_{T})", 10, 0, 100, 10, 0, 0.5);
+    frame->SetStats(0);
+    TCanvas *c3 = new TCanvas("c3", "c3", 1800, 1000);
+    frame->Draw();
+    res_pi->SetLineColor(kRed);
+    res_pi->SetStats(0);
+    res_pi->Draw("SAME");
+    res_ka->SetLineColor(kBlue);
+    res_ka->SetStats(0);
+    res_ka->Draw("SAME");
+    res_pr->SetLineColor(kGreen + 2);
+    res_pr->SetStats(0);
+    res_pr->Draw("SAME");
+    TLegend *leg = new TLegend(0.6, 0.7, 0.85, 0.85);
+    leg->AddEntry(res_pi, "Pion", "l");
+    leg->AddEntry(res_ka, "Kaon", "l");
+    leg->AddEntry(res_pr, "Proton", "l");
+    leg->Draw("SAME");
 }

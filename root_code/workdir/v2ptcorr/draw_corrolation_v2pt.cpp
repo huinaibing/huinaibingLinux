@@ -29,6 +29,7 @@ void draw_corrolation_v2pt()
      */
     {
         TH1D *h_c22_trackweighted = (TH1D *)dir->Get("c22TrackWeight");
+        TH1D *hmeanpt = (TH1D *)dir->Get("hMeanPt");
         TH1D *tmp = new TH1D("v2ptcorre_mean", "v2ptcorre_mean", 11, new double[12]{0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90});
         TFile *data_run2 = TFile::Open("/home/huinaibing/Downloads/run2v2ptcorr.root");
         TDirectory *dir_run2 = (TDirectory *)data_run2->Get("Table 1");
@@ -41,6 +42,7 @@ void draw_corrolation_v2pt()
             double ptAve = h_ptAve->GetBinContent(i);
             double c24 = h_c24->GetBinContent(i);
             double ptSquareAve = h_ptSquareAve->GetBinContent(i);
+            double meanpt = hmeanpt->GetBinContent(i);
 
             double sigma_cov_v2pt = h_cov_v2pt->GetBinError(i);
             double sigma_c22 = h_c22->GetBinError(i);
@@ -50,7 +52,7 @@ void draw_corrolation_v2pt()
 
             double c22_trackweighted = h_c22_trackweighted->GetBinContent(i);
 
-            double v2ptcorre = (cov_v2pt - ptAve * c22_trackweighted) / sqrt(ptSquareAve - ptAve * ptAve) / sqrt(c24 - c22 * c22);
+            double v2ptcorre = (cov_v2pt - ptAve * c22_trackweighted) / sqrt(ptSquareAve - 2 * meanpt * ptAve + meanpt * meanpt) / sqrt(c24 - c22 * c22);
 
             tmp->SetBinContent(i, v2ptcorre);
             // end calculate value

@@ -5,7 +5,7 @@
 #include "TCanvas.h"
 #include "THn.h"
 #include <iostream>
-#include "GFWWeights.h"
+
 using namespace std;
 
 void draw_NUA_graph()
@@ -13,21 +13,24 @@ void draw_NUA_graph()
     // get graph
     int runlist[8] = {544095, 544098, 544116, 544121, 544122, 544123, 544124, 544091}; // for zzh
     GFWWeights *fWeightsREF = nullptr;
-    TFile *file = TFile::Open("/home/huinaibing/Documents/datas4o2/pass3_change_eta_for_NUA.root");
+    TFile *file = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/small_littlecut_tr602740.root");
     TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
     TDirectory *correction = (TDirectory *)dir_main->Get("correction");
-    THnSparseF *grh = (THnSparseF *)correction->Get("hRunNumberPhiEtaVertex");
+    THnSparseD *grh = (THnSparseD *)correction->Get("hRunNumberPhiEtaVertex");
     // end graph
 
-    fstream o("log_NUA_weight.txt", ios::out);
     // loop all the runList
     for (int idxRun = 0; idxRun < 8; idxRun++)
     {
-        if (idxRun != 4)
+        if (idxRun != 2 && idxRun != 4)
+        {
             continue;
+        }
+
         // for each run, create a file
         TFile *output_file = 0;
-        output_file = new TFile(Form("corrections_pass3/NUA_%d.root", runlist[idxRun]), "RECREATE", "");
+        std::cout << "Creating file for run " << runlist[idxRun] << std::endl;
+        output_file = new TFile(Form("correction_littlecut/pass5zzh_NUA_%d.root", runlist[idxRun]), "RECREATE");
         // end create file
 
         // init GFWWeights, althought I dont know why they init a pointer, i just copy it
@@ -36,20 +39,24 @@ void draw_NUA_graph()
         fWeightsREF->init(true, false);
         // end init GFWWeights
 
-        // loop the thnd NUA and fill the fWeight
+        // get the hist
+        grh->GetAxis(0)->SetRange(idxRun + 1, idxRun + 1);
+        TH3D *NUA = grh->Projection(1, 2, 3);
+        // end get the hist
 
-        for (int binEta = 1; binEta <= 64; binEta++)
+        // loop the thnd NUA and fill the fWeight
+        for (int phibin = 1; phibin <= 60; phibin++)
         {
-            for (int binVz = 1; binVz <= 40; binVz++)
+            for (int etabin = 1; etabin <= 64; etabin++)
             {
-                for (int binPhi = 1; binPhi <= 60; binPhi++)
+                for (int vtxzbin = 1; vtxzbin <= 40; vtxzbin++)
                 {
-                    double weight = grh->GetBinContent(new int[4]{idxRun + 1, binPhi, binEta, binVz});
-                    // double err = NUA->GetBinError(binPhi, binEta, binVz);
-                    double phiuse = grh->GetAxis(1)->GetBinCenter(binPhi);
-                    double etause = grh->GetAxis(2)->GetBinCenter(binEta);
-                    double vtxzuse = grh->GetAxis(3)->GetBinCenter(binVz);
-                    o << phiuse << " " << etause << " " << vtxzuse << " " << weight << endl;
+                    double weight = NUA->GetBinContent(phibin, etabin, vtxzbin);
+                    // double err = NUA->GetBinError(phibin, etabin, vtxzbin);
+                    double phiuse = NUA->GetXaxis()->GetBinCenter(phibin);
+                    double etause = NUA->GetYaxis()->GetBinCenter(etabin);
+                    double vtxzuse = NUA->GetZaxis()->GetBinCenter(vtxzbin);
+                    // for (int i = 0; i <= weight; i++)
                     fWeightsREF->fill(phiuse, etause, vtxzuse, 1, 0, 0, weight);
                 }
             }
@@ -61,5 +68,4 @@ void draw_NUA_graph()
         output_file->Close();
     }
     // end loop all the runlist
-    o.close();
 }
