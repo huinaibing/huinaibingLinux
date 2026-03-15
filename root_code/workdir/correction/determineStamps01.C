@@ -19,10 +19,6 @@ void determineStamps01()
 
   for (int ii = 0; ii < nRuns; ii++)
   {
-    if (ii != 2 && ii != 4)
-    {
-      continue;
-    }
 
     headers = ccdb_api.retrieveHeaders(Form("RCT/Info/RunInformation/%i", runs[ii]), metadataRCT, -1);
     int64_t tsSOR = atol(headers["SOR"].c_str());
@@ -30,7 +26,7 @@ void determineStamps01()
 
     cout << "Run " << runs[ii] << " SOR " << tsSOR << " EOR " << tsEOR << endl;
 
-    TFile *fileREF = new TFile(Form("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/correction_littlecut/pass5zzh_NUA_%d.root", runs[ii]), "READ");
+    TFile *fileREF = new TFile(Form("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/correction_pass5_newncls/pass5zzh_NUA_%d.root", runs[ii]), "READ");
     TObject *fWeightsREF = nullptr;
     fWeightsREF = fileREF->Get("ccdb_object");
 
@@ -42,7 +38,7 @@ void determineStamps01()
     cout << "Attempting CCDB upload..." << endl;
     try
     {
-      ccdb_api.storeAsTFileAny(fWeightsREF, "Users/q/qiuyu/pass5/trsmall602740", metadata, tsSOR, tsEOR);
+      ccdb_api.storeAsTFileAny(fWeightsREF, "Users/q/qiuyu/pass5/newncls/tr624786", metadata, tsSOR, tsEOR);
     }
     catch (std::exception const &e)
     {

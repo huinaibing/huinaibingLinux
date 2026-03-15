@@ -11,14 +11,14 @@
 #include <vector>
 #include "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/WorkDirUtils/Utils4V2pTCorr.h"
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/AnalysisResults_new_cut_small_errornua.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/right_all_global.root"
 
 #define BLOCK1 // event count check
 #define BLOCK2 // phi correction check
 #define BLOCK3 // pt spectrum and efficiency check
 #define BLOCK4 // v2{2} and v2{4} for charged
 #define BLOCK5 // v2{2} cmparison
-#define BLOCK6 // diff pt v2 comparison
+// #define BLOCK6 // diff pt v2 comparison
 
 namespace lambdaFunction
 {
@@ -109,6 +109,8 @@ namespace qaUtil4Fc
         }
         TProfile *h_c24 = h_prof_ch->ProfileX("c24", 3, 3);
 
+        TProfile *h_c22full = h_prof_ch->ProfileX("c22full", 5, 5);
+
         TH1D *v22 = new TH1D("v22", "v2{2} for charged;Centrality (%);v2{2}", h_c22->GetNbinsX(), h_c22->GetXaxis()->GetXbins()->GetArray());
         TH1D *v24 = new TH1D("v24", "v2{4} for charged;Centrality (%);v2{4}", h_c24->GetNbinsX(), h_c24->GetXaxis()->GetXbins()->GetArray());
 
@@ -126,13 +128,14 @@ namespace qaUtil4Fc
             }
 
             double c24 = h_c24->GetBinContent(i);
-            if (2 * c22 * c22 - c24 < 0)
+            double c22full = h_c22full->GetBinContent(i);
+            if (2 * c22full * c22full - c24 < 0)
             {
                 v24->SetBinContent(i, 0);
             }
             else
             {
-                v24->SetBinContent(i, TMath::Sqrt(TMath::Sqrt(2 * c22 * c22 - c24)));
+                v24->SetBinContent(i, TMath::Sqrt(TMath::Sqrt(2 * c22full * c22full - c24)));
             }
         }
         // end fill v2{2} and v2{4}
@@ -237,7 +240,7 @@ void QA()
 {
     // init
     TFile *f = TFile::Open(FILE);
-    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr");
+    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr_newitsncls");
     FlowContainer *fc_ch = (FlowContainer *)dir_main->Get("FlowContainerCharged");
     FlowContainer *fc_pi = (FlowContainer *)dir_main->Get("FlowContainerPi");
     FlowContainer *fc_ka = (FlowContainer *)dir_main->Get("FlowContainerKa");
@@ -261,8 +264,8 @@ void QA()
      */
     {
 #ifdef BLOCK2
-        const double rangeMin = 160e6;
-        const double rangeMax = 220e6;
+        const double rangeMin = 1300e6;
+        const double rangeMax = 1900e6;
         TH1D *h_phi = (TH1D *)dir_main->Get("hPhi");
         TH1D *h_phi_corr = (TH1D *)dir_main->Get("hPhicorr");
         TCanvas *c2 = new TCanvas("c2", "c2", 800, 600);
@@ -314,6 +317,7 @@ void QA()
         TFile *file_run2 = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/run2v2cent.root");
         TDirectory *dir_run2 = (TDirectory *)file_run2->Get("Table 1");
         TH1D *h_run2 = (TH1D *)dir_run2->Get("Hist1D_y1");
+        TH1D *h_run2v24 = (TH1D *)dir_run2->Get("Hist1D_y2");
         for (int i = 1; i <= h_run2->GetNbinsX(); i++)
         {
             h_run2->SetBinError(i, 0.00001);
@@ -323,15 +327,19 @@ void QA()
         v2s_ch[0]->SetTitle("v_{2} for charged;Centrality (%);v_{2}");
         v2s_ch[0]->SetStats(0);
         v2s_ch[0]->GetYaxis()->SetRangeUser(0, 0.12);
-        v2s_ch[0]->Draw();
-        v2s_ch[1]->SetLineColor(kRed);
-        // v2s_ch[1]->Draw("SAME");
-        h_run2->SetLineColor(kGreen);
-        h_run2->Draw("same");
+        // v2s_ch[0]->Draw();
+        v2s_ch[0]->SetLineColor(kRed);
+        v2s_ch[1]->SetStats(0);
+        v2s_ch[1]->Draw("SAME");
+        h_run2v24->SetLineColor(kRed);
+        h_run2v24->Draw("SAME");
+        h_run2->SetLineColor(kGreen + 2);
+        // h_run2->Draw("same");
         TLegend *leg1 = new TLegend(0.6, 0.7, 0.8, 0.8);
-        leg1->AddEntry(v2s_ch[0], "v_{2}{2}");
-        // leg1->AddEntry(v2s_ch[1], "v_{2}{4}");
-        leg1->AddEntry(h_run2, "run2 v_{2}{2}");
+        // leg1->AddEntry(v2s_ch[0], "v_{2}{2}");
+        leg1->AddEntry(v2s_ch[1], "v_{2}{4}");
+        leg1->AddEntry(h_run2v24, "run 2");
+        // leg1->AddEntry(h_run2, "run2 v_{2}{2}");
         leg1->Draw("SAME");
 #endif
     }
@@ -357,9 +365,17 @@ void QA()
         v22_prime_pi->Draw("SAME");
 
         TLegend *leg_pi = new TLegend(0.6, 0.7, 0.8, 0.8);
-        leg_pi->AddEntry(v22_primeprime_pi, "v_{2}\'{2}");
-        leg_pi->AddEntry(v22_prime_pi, "v_{2}\"{2}");
+        leg_pi->AddEntry(v22_prime_pi, "v_{2}\'{2}");
+        leg_pi->AddEntry(v22_primeprime_pi, "v_{2}\"{2}");
         leg_pi->Draw("SAME");
+
+        TH1D *temppi = (TH1D *)v22_prime_pi->Clone("temp_pi");
+        TCanvas *c_ratiopi = new TCanvas("c_ratio_pi", "v2\' / v2\" for pi", 800, 600);
+        gPad->SetGridy();
+        temppi->Divide(v22_primeprime_pi);
+        temppi->SetStats(0);
+        temppi->SetTitle("v2\' / v2\" for pi");
+        temppi->Draw();
 
         // ==================== 2. Ka（K粒子）绘图 ====================
         FlowContainerManager fcm_ka(fc_ch, fc_ka); // ka粒子的FlowContainerManager（需确保fc_ka已定义）
@@ -375,9 +391,17 @@ void QA()
         v22_prime_ka->Draw("SAME");
 
         TLegend *leg_ka = new TLegend(0.6, 0.7, 0.8, 0.8);
-        leg_ka->AddEntry(v22_primeprime_ka, "v_{2}\'{2}");
-        leg_ka->AddEntry(v22_prime_ka, "v_{2}\"{2}");
+        leg_ka->AddEntry(v22_prime_ka, "v_{2}\'{2}");
+        leg_ka->AddEntry(v22_primeprime_ka, "v_{2}\"{2}");
         leg_ka->Draw("SAME");
+
+        TH1D *tempka = (TH1D *)v22_prime_ka->Clone("temp_ka");
+        TCanvas *c_ratioka = new TCanvas("c_ratio_ka", "v2\' / v2\" for ka", 800, 600);
+        tempka->Divide(v22_primeprime_ka);
+        tempka->SetStats(0);
+        gPad->SetGridy();
+        tempka->SetTitle("v2\' / v2\" for ka");
+        tempka->Draw();
 
         // ==================== 3. Pr（质子）绘图 ====================
         FlowContainerManager fcm_pr(fc_ch, fc_pr); // pr粒子的FlowContainerManager（需确保fc_pr已定义）
@@ -393,9 +417,18 @@ void QA()
         v22_prime_pr->Draw("SAME");
 
         TLegend *leg_pr = new TLegend(0.6, 0.7, 0.8, 0.8);
-        leg_pr->AddEntry(v22_primeprime_pr, "v_{2}\'{2}");
-        leg_pr->AddEntry(v22_prime_pr, "v_{2}\"{2}");
+        leg_pr->AddEntry(v22_prime_pr, "v_{2}\'{2}");
+        leg_pr->AddEntry(v22_primeprime_pr, "v_{2}\"{2}");
         leg_pr->Draw("SAME");
+
+        TH1D *temppr = (TH1D *)v22_prime_pr->Clone("temp_pr");
+        TCanvas *c_ratiopr = new TCanvas("c_ratio_pr", "v2\' / v2\" for pr", 800, 600);
+        temppr->Divide(v22_primeprime_pr);
+        temppr->SetStats(0);
+        temppr->GetYaxis()->SetRangeUser(0.6, 1.4);
+        gPad->SetGridy();
+        temppr->SetTitle("v2\' / v2\" for pr");
+        temppr->Draw();
 #endif
     }
     // end block 5

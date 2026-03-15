@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - -I/home/huinaibing/root/root/include
+    - -std=gnu++17

@@ -13,20 +13,10 @@ using namespace std;
 
 namespace util
 {
-    double calculate_ratio(double pid_charged_v4, double pid_charged_v2, double charged_v2, double charged_v4)
-    {
-        double cn4 = charged_v4 - 2 * charged_v2 * charged_v2;
-        if (cn4 > 0)
-        {
-            return 0;
-        }
-
-        return (2 * pid_charged_v2 * charged_v2 - pid_charged_v4) / pow(-cn4, 0.75);
-    }
-
     double calculate_var(double pid_charged_c22, double pid_charged_c24, double charged_c22, double charged_c24)
     {
         double v22pow4 = pow(pid_charged_c22, 4) / charged_c22 / charged_c22;
+        /// @todo add full
         double v24pow4 = pow(2 * pid_charged_c22 * charged_c22 - pid_charged_c24, 4) / pow(2 * charged_c22 * charged_c22 - charged_c24, 3);
 
         double res = v22pow4 - v24pow4;
@@ -116,13 +106,13 @@ namespace util4fc
     }
 }
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/fc_correction_ncls3_closegoodits.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/right_all_global.root"
 
 TH1D *draw_pid_v2pt_correlation_main(const char *fc_name)
 {
     // open file and get flow containers
     TFile *file = TFile::Open(FILE);
-    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr_less_its_ncls_id44937");
+    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr_newitsncls");
     FlowContainer *fc_pid = (FlowContainer *)dir_main->Get(fc_name);
     FlowContainer *fc_ch = (FlowContainer *)dir_main->Get("FlowContainerCharged");
     TObjArray *arr_ch = fc_ch->GetSubProfiles();
@@ -177,7 +167,7 @@ void draw_pid_v2pt_correlation()
     TH1D *res_ka = draw_pid_v2pt_correlation_main("FlowContainerKa");
     TH1D *res_pr = draw_pid_v2pt_correlation_main("FlowContainerPr");
 
-    TH2D *frame = new TH2D("frame", "v2pt correlation for PID particle;Centrality (%);#rho(v_{2}^{2}{2}, p_{T})", 10, 0, 100, 10, 0, 0.5);
+    TH2D *frame = new TH2D("frame", "v2pt correlation for PID particle;Centrality (%);#rho(v_{2}^{2}{2}, p_{T})", 10, 0, 70, 10, 0, 0.5);
     frame->SetStats(0);
     TCanvas *c3 = new TCanvas("c3", "c3", 1800, 1000);
     frame->Draw();

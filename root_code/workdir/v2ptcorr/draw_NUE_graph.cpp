@@ -1,14 +1,14 @@
-#include "TFile.h"
-#include "TDirectory.h"
-#include "TH3.h"
-#include "THnSparse.h"
 #include "TCanvas.h"
-#include "THn.h"
-#include "TLegend.h"
+#include "TDirectory.h"
+#include "TFile.h"
 #include "TH2.h"
+#include "TH3.h"
+#include "THn.h"
+#include "THnSparse.h"
+#include "TLegend.h"
 #include <iostream>
 
-#define MC_PATH "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pt2DEff.root"
+#define MC_PATH "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/mc_new_include_its.root"
 
 void draw_NUE_graph()
 {
@@ -20,23 +20,21 @@ void draw_NUE_graph()
 
     // open graph
     TH2D *hMcCentPt = (TH2D *)correction->Get("hPtCentMcGen");
-    TH2D *hDataCentPt = (TH2D *)correction->Get("hPtCentMcRec");
-
-    // end open graph
+    TH2D *hDataCentPt = (TH2D *)correction->Get("hPtCentMcRec4ITSOnly");
 
     // divide
     TCanvas *c3 = new TCanvas("c3", "c3", 1800, 1000);
     hDataCentPt->Divide(hMcCentPt);
+    hDataCentPt->SetStats(0);
     hDataCentPt->Draw();
-    TFile *file_efficiency = new TFile("corrections/NUE2D.root", "RECREATE");
+    TFile *file_efficiency = new TFile("correctionsNUE/NUE2D4ITS.root", "RECREATE");
     hDataCentPt->SetName("ccdb_object");
     hDataCentPt->Write();
     file_efficiency->Close();
     return;
 
-
     // TFile *file_efficiency = new TFile("corrections/NUE.root", "RECREATE");
-    
+
     // TH2D *frame = new TH2D("frame", "", 100, 0, 100, 100, 0, 1);
     // frame->GetXaxis()->SetTitle("p_{T}(GeV)");
     // frame->GetYaxis()->SetTitle("efficiency");
@@ -60,7 +58,7 @@ void draw_NUE_graph()
     //     tmp[i]->SetLineColor(kBlue + 3 * i);
 
     //     leg->AddEntry(tmp[i], Form("%2.4s%%", std::to_string(hMcCentPt->GetXaxis()->GetBinCenter(i + 1)).c_str()));
-        
+
     // }
     // leg->Draw("same");
     // c3->Write();
