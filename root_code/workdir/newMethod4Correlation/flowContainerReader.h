@@ -187,6 +187,30 @@ public:
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
         return fcrsub.h_c22TrackWeight->GetBinContent(centBin);
     }
+
+    FlowContainerTProfile2DReader get_profile2d_reader()
+    {
+        return FlowContainerTProfile2DReader(this->h_prof, this->name, this->isPID);
+    }
+
+    FlowContainerTProfile2DReader get_profile2d_reader(int bootstrapIdx)
+    {
+        TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
+        return FlowContainerTProfile2DReader(h_sub_prof, this->name, this->isPID);
+    }
+
+    double get_meanpt(int centBin)
+    {
+        FlowContainerTProfile2DReader fcrMain(this->h_prof, this->name, this->isPID);
+        return fcrMain.h_hMeanPt->GetBinContent(centBin);
+    }
+
+    double get_meanpt(int centBin, int bootstrapIdx)
+    {
+        TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
+        FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
+        return fcrsub.h_hMeanPt->GetBinContent(centBin);
+    }
 };
 
 

@@ -3,7 +3,7 @@
 #include "util.h"
 
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/new_method_test.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/new_method.root"
 #define DIRNAME "pid-flow-pt-corr"
 
 

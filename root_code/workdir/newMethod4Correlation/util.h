@@ -2,6 +2,7 @@
 #define UTIL
 #include "TProfile.h"
 #include "flowContainerReader.h"
+#include <random>
 
 class Utils
 {
@@ -68,6 +69,44 @@ public:
             return 0;
 
         return sqrt(res);
+    }
+
+    static int get_random_int(int min, int max)
+    {
+        // 1. 真随机种子（硬件级随机，只初始化一次）
+        static std::random_device rd;
+        // 2. 随机数引擎（高性能，最常用）
+        static std::mt19937 gen(rd());
+        // 3. 定义整数均匀分布
+        std::uniform_int_distribution<> dist(min, max);
+
+        return dist(gen);
+    }
+
+
+    static double get_cov(TProfile *proMerged, double meanptInCent)
+    {
+        double cov = 0;
+        double point = 0;
+
+        for (int i = 1; i <= proMerged->GetNbinsX(); i++)
+        {
+            double weight = proMerged->GetBinEntries(i);
+
+            if (weight == 0)
+            {
+                continue;
+            }
+
+            double meanpt = proMerged->GetBinCenter(i);
+
+            double val = proMerged->GetBinContent(i);
+            cov += (meanpt - meanptInCent) * val * weight;
+            point += weight;
+        }
+
+        cov /= point;
+        return cov;
     }
 };
 
