@@ -11,7 +11,7 @@
 #include <vector>
 #include "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/WorkDirUtils/Utils4V2pTCorr.h"
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/right_all_global.root"
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/new_method_big.root"
 
 #define BLOCK1 // event count check
 #define BLOCK2 // phi correction check
@@ -240,7 +240,7 @@ void QA()
 {
     // init
     TFile *f = TFile::Open(FILE);
-    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr_newitsncls");
+    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr_checkdiff");
     FlowContainer *fc_ch = (FlowContainer *)dir_main->Get("FlowContainerCharged");
     FlowContainer *fc_pi = (FlowContainer *)dir_main->Get("FlowContainerPi");
     FlowContainer *fc_ka = (FlowContainer *)dir_main->Get("FlowContainerKa");

@@ -33,42 +33,11 @@ double get_cov_part1(int centBin)
     protemp2dpt->GetXaxis()->SetRange(centBin, centBin);
     auto proMergedpt = protemp2dpt->ProfileY();
 
-    auto C1 = new TCanvas("c1", "", 800, 600);
-    proMerged->SetStats(0);
-    proMerged->GetXaxis()->SetTitle("mean pt(GeV)");
-    proMerged->GetYaxis()->SetTitle("C22");
-    proMerged->Draw();
-
-    // merge 成一个图
-    // for (int idxPt = 1; idxPt <= proOrigin->GetNbinsX(); idxPt++)
-    // {
-    //     double weightValue = 0;
-    //     double sumWeight = 0;
-    //     for (int idxNbs = 1; idxNbs <= proOrigin->GetNbinsZ(); idxNbs++)
-    //     {
-    //         double weight = proOrigin->GetBinEntries(proOrigin->GetBin(idxPt, centBin, idxNbs));
-    //         if (weight == 0)
-    //         {
-    //             continue;
-    //         }
-
-    //         weightValue += proOrigin->GetBinContent(idxPt, centBin, idxNbs) * weight;
-    //         sumWeight += weight;
-    //     }
-
-    //     if (sumWeight == 0)
-    //     {
-    //         continue;
-    //     }
-    //     // std::cout << idxPt << " " << sumWeight << std::endl;
-    //     proMerged->SetBinContent(idxPt, weightValue);
-    //     proMerged->SetBinEntries(idxPt, sumWeight);
-
-    //     //std::cout << weightValue / sumWeight << " " << sumWeight << std::endl;
-    // }
-    // // return proMerged;
-
-    // std::cout << "===================================" << std::endl;
+    // auto C1 = new TCanvas("c1", "", 800, 600);
+    // proMerged->SetStats(0);
+    // proMerged->GetXaxis()->SetTitle("mean pt(GeV)");
+    // proMerged->GetYaxis()->SetTitle("C22");
+    // proMerged->Draw();
 
 
     double cov = 0;

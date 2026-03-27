@@ -1,19 +1,25 @@
 #include "PIDReader.h"
 #include "flowContainerReader.h"
+#include "util.h"
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/new_method.root"
-#define DIRNAME "pid-flow-pt-corr"
-#define FLOWCONTAINERNAME "FlowContainerPi"
-#define PARTICLETYPE 1
-#define OUTPUTFILE "result/res_pion.root"
+#define XQYFILE                                                                                                        \
+    "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/data4newmethod/"                \
+    "big_valueerror.root"
+//#define XQYFILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/closure_test_smallzzhpass5.root"
+#define XQYDIRNAME "pid-flow-pt-corr_id50251"
+#define XQYFLOWCONTAINERNAME "FlowContainerPi"
+#define XQYPARTICLETYPE 1
+#define OUTPUTXQYFILE "result/res_test.root"
+#define XQYMEANPTNAME "hPionMeanptWeightC22pure"
+
 
 void calculate_PID_rho()
 {
-    PIDReader *rd = new PIDReader(FILE, DIRNAME, PARTICLETYPE);
+    PIDReader *rd = new PIDReader(XQYFILE, XQYDIRNAME, XQYPARTICLETYPE);
     FlowContainerReader *fcReader_pid =
-        new FlowContainerReader(FILE, DIRNAME, FLOWCONTAINERNAME, FLOWCONTAINERNAME, true);
+        new FlowContainerReader(XQYFILE, XQYDIRNAME, XQYFLOWCONTAINERNAME, XQYFLOWCONTAINERNAME, true);
     FlowContainerReader *fcReader_ch =
-        new FlowContainerReader(FILE, DIRNAME, "FlowContainerCharged", "FlowContainerCharged", false);
+        new FlowContainerReader(XQYFILE, XQYDIRNAME, "FlowContainerCharged", "FlowContainerCharged", false);
 
 
     double centAxis[12] = {0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90};
@@ -22,6 +28,7 @@ void calculate_PID_rho()
 
     double res[11] = {0};
 
+    std::cout << XQYMEANPTNAME << std::endl;
 
     /// @note this for loop is used to calculate center val
     for (int i = 1; i <= 11; i++)
@@ -33,8 +40,11 @@ void calculate_PID_rho()
         if (varpt == 0 || varc22 == 0)
             continue;
 
-        double meanPtInCent = fcReader_pid->get_meanpt(i);
-        double covInCent = Utils::get_cov(rd->getSpecifiedCentBin(i), meanPtInCent);
+        double meanPtInCent = fcReader_pid->get_ptave(i);
+        double covInCent =
+            Utils::get_cov(rd->getSpecifiedCentBin(i), meanPtInCent, rd->getSpecifiedCentBin(i, XQYMEANPTNAME));
+
+        std::cout << covInCent << " cov" << std::endl;
 
         res[i] = covInCent / varpt / varc22;
     }
@@ -42,33 +52,44 @@ void calculate_PID_rho()
 
     double bserror[11] = {0};
 
-    /// @note bootstrap
-    for (int bsIDX = 0; bsIDX < 30; bsIDX++)
-    {
-        for (int i = 1; i <= 11; i++)
-        {
-            double varpt = fcReader_pid->get_var_meanpt(i, bsIDX);
-            double varc22 = Utils::calculate_var_pid(i,
-                                                     fcReader_ch->get_profile2d_reader(bsIDX),
-                                                     fcReader_pid->get_profile2d_reader(bsIDX));
+    // /// @note bootstrap
+    // for (int bsIDX = 0; bsIDX < 30; bsIDX++)
+    // {
+    //     std::cout << "=====================" << std::endl;
+    //     for (int i = 1; i <= 11; i++)
+    //     {
+    //         double varpt = fcReader_pid->get_val_meanpt_jackknife(i, bsIDX);
+    //         double varc22 = Utils::calculate_var_pid(i,
+    //                                                  fcReader_ch->get_profile2d_reader_jackknife(bsIDX),
+    //                                                  fcReader_pid->get_profile2d_reader_jackknife(bsIDX));
 
-            if (varpt == 0 || varc22 == 0)
-                continue;
+    //         if (varpt == 0 || varc22 == 0)
+    //             continue;
 
-            double meanPtInCent = fcReader_pid->get_meanpt(i, bsIDX);
-            double covInCent = Utils::get_cov(rd->getSpecifiedCentBin(i, bsIDX), meanPtInCent);
+    //         double meanPtInCent = fcReader_pid->get_meanpt_jackknife(i, bsIDX);
+    //         double covInCent = Utils::get_cov(rd->getSpecifiedCentBin_jackknife(i, bsIDX),
+    //                                           meanPtInCent,
+    //                                           rd->getSpecifiedCentBin_jackknife(i, XQYMEANPTNAME, bsIDX));
 
-            double res_bs = covInCent / varpt / varc22;
+    //         double res_bs = covInCent / varpt / varc22;
 
-            bserror[i - 1] += TMath::Power(res_bs - res[i - 1], 2);
-        }
-    }
 
-    for (int i = 0; i < 11; i++)
-    {
-        bserror[i] = TMath::Sqrt(bserror[i] / 29);
-    }
-    // end bootstrap
+    //         std::cout << "------------------------" << std::endl;
+    //         std::cout << "covInCent = " << covInCent << std::endl;
+    //         std::cout << "varpt     = " << varpt << std::endl;
+    //         std::cout << "varc22    = " << varc22 << std::endl;
+    //         std::cout << "res_bs " << res_bs << std::endl;
+
+
+    //         bserror[i - 1] += TMath::Power(res_bs - res[i - 1], 2);
+    //     }
+    // }
+
+    // for (int i = 0; i < 11; i++)
+    // {
+    //     bserror[i] = TMath::Sqrt(bserror[i] / 29);
+    // }
+    // // end bootstrap
 
     for (int i = 1; i <= 11; i++)
     {
@@ -79,7 +100,7 @@ void calculate_PID_rho()
         }
     }
 
-    TFile *res_file = TFile::Open(OUTPUTFILE, "RECREATE");
+    TFile *res_file = TFile::Open(OUTPUTXQYFILE, "RECREATE");
     rho_PID->Write();
     res_file->Close();
 

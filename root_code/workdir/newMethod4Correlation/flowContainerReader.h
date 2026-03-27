@@ -5,6 +5,21 @@
 #include "TProfile2D.h"
 
 
+int get_random_int(int min, int max)
+{
+    // // 1. 真随机种子（硬件级随机，只初始化一次）
+    // static std::random_device rd;
+    // // 2. 随机数引擎（高性能，最常用）
+    // static std::mt19937 gen(rd());
+    // // 3. 定义整数均匀分布
+    // std::uniform_int_distribution<> dist(min, max);
+
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+}
+
+
 enum FCGraphName
 {
     c22 = 1,
@@ -60,36 +75,59 @@ public:
     FlowContainerTProfile2DReader(TProfile2D *h_prof_total, const char *name, bool isPID)
     {
         this->isPID = isPID;
-        h_c22 = h_prof_total->ProfileX(Form("c22%s", name), FCGraphName::c22, FCGraphName::c22);
-        h_c32 = h_prof_total->ProfileX(Form("c32%s", name), FCGraphName::c32, FCGraphName::c32);
-        h_c24 = h_prof_total->ProfileX(Form("c24%s", name), FCGraphName::c24, FCGraphName::c24);
-        h_c34 = h_prof_total->ProfileX(Form("c34%s", name), FCGraphName::c34, FCGraphName::c34);
-        h_c22Full = h_prof_total->ProfileX(Form("c22Full%s", name), FCGraphName::c22Full, FCGraphName::c22Full);
-        h_c22TrackWeight = h_prof_total->ProfileX(Form("c22TrackWeight%s", name),
+        h_c22 = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                       FCGraphName::c22,
+                                       FCGraphName::c22);
+        h_c32 = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                       FCGraphName::c32,
+                                       FCGraphName::c32);
+        h_c24 = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                       FCGraphName::c24,
+                                       FCGraphName::c24);
+        h_c34 = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                       FCGraphName::c34,
+                                       FCGraphName::c34);
+        h_c22Full = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                           FCGraphName::c22Full,
+                                           FCGraphName::c22Full);
+        h_c22TrackWeight = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
                                                   FCGraphName::c22TrackWeight,
                                                   FCGraphName::c22TrackWeight);
-        h_c32TrackWeight = h_prof_total->ProfileX(Form("c32TrackWeight%s", name),
+        h_c32TrackWeight = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
                                                   FCGraphName::c32TrackWeight,
                                                   FCGraphName::c32TrackWeight);
-        h_c24TrackWeight = h_prof_total->ProfileX(Form("c24TrackWeight%s", name),
+        h_c24TrackWeight = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
                                                   FCGraphName::c24TrackWeight,
                                                   FCGraphName::c24TrackWeight);
-        h_c34TrackWeight = h_prof_total->ProfileX(Form("c34TrackWeight%s", name),
+        h_c34TrackWeight = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
                                                   FCGraphName::c34TrackWeight,
                                                   FCGraphName::c34TrackWeight);
-        h_c22FullTrackWeight = h_prof_total->ProfileX(Form("c22FullTrackWeight%s", name),
+        h_c22FullTrackWeight = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
                                                       FCGraphName::c22FullTrackWeight,
                                                       FCGraphName::c22FullTrackWeight);
-        h_covV2Pt = h_prof_total->ProfileX(Form("covV2Pt%s", name), FCGraphName::covV2Pt, FCGraphName::covV2Pt);
-        h_covV3Pt = h_prof_total->ProfileX(Form("covV3Pt%s", name), FCGraphName::covV3Pt, FCGraphName::covV3Pt);
-        h_ptSquareAve =
-            h_prof_total->ProfileX(Form("ptSquareAve%s", name), FCGraphName::ptSquareAve, FCGraphName::ptSquareAve);
-        h_ptAve = h_prof_total->ProfileX(Form("ptAve%s", name), FCGraphName::ptAve, FCGraphName::ptAve);
-        h_hMeanPt = h_prof_total->ProfileX(Form("hMeanPt%s", name), FCGraphName::hMeanPt, FCGraphName::hMeanPt);
+        h_covV2Pt = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                           FCGraphName::covV2Pt,
+                                           FCGraphName::covV2Pt);
+        h_covV3Pt = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                           FCGraphName::covV3Pt,
+                                           FCGraphName::covV3Pt);
+        h_ptSquareAve = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                               FCGraphName::ptSquareAve,
+                                               FCGraphName::ptSquareAve);
+        h_ptAve = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                         FCGraphName::ptAve,
+                                         FCGraphName::ptAve);
+        h_hMeanPt = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                           FCGraphName::hMeanPt,
+                                           FCGraphName::hMeanPt);
         if (isPID)
         {
-            h_c22pure = h_prof_total->ProfileX(Form("c22pure%s", name), FCGraphName::c22pure, FCGraphName::c22pure);
-            h_c32pure = h_prof_total->ProfileX(Form("c32pure%s", name), FCGraphName::c32pure, FCGraphName::c32pure);
+            h_c22pure = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                               FCGraphName::c22pure,
+                                               FCGraphName::c22pure);
+            h_c32pure = h_prof_total->ProfileX(std::to_string(get_random_int(0, 1000000)).c_str(),
+                                               FCGraphName::c32pure,
+                                               FCGraphName::c32pure);
         }
     }
 
@@ -151,6 +189,23 @@ public:
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
         return fcrsub.get_var_meanpt(centBin);
     }
+    double get_val_meanpt_jackknife(int centBin, int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
+
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+
+        mergedJack->Merge(sub_prof_temp);
+
+        FlowContainerTProfile2DReader fcrsub(mergedJack, this->name, this->isPID);
+        return fcrsub.get_var_meanpt(centBin);
+    }
     // =====================================
     double get_var_c22(int centBin)
     {
@@ -161,6 +216,22 @@ public:
     {
         TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
+        return fcrsub.get_var_c22(centBin);
+    }
+    double get_val_c22_jackknife(int centBin, int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
+
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+        mergedJack->Merge(sub_prof_temp);
+
+        FlowContainerTProfile2DReader fcrsub(mergedJack, this->name, this->isPID);
         return fcrsub.get_var_c22(centBin);
     }
     // =====================================
@@ -187,28 +258,57 @@ public:
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
         return fcrsub.h_c22TrackWeight->GetBinContent(centBin);
     }
-
+    // ==============================================
     FlowContainerTProfile2DReader get_profile2d_reader()
     {
         return FlowContainerTProfile2DReader(this->h_prof, this->name, this->isPID);
     }
-
     FlowContainerTProfile2DReader get_profile2d_reader(int bootstrapIdx)
     {
         TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
         return FlowContainerTProfile2DReader(h_sub_prof, this->name, this->isPID);
     }
+    FlowContainerTProfile2DReader get_profile2d_reader_jackknife(int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
 
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+        mergedJack->Merge(sub_prof_temp);
+
+        return FlowContainerTProfile2DReader(mergedJack, this->name, this->isPID);
+    }
+    // ==============================================
     double get_meanpt(int centBin)
     {
         FlowContainerTProfile2DReader fcrMain(this->h_prof, this->name, this->isPID);
         return fcrMain.h_hMeanPt->GetBinContent(centBin);
     }
-
     double get_meanpt(int centBin, int bootstrapIdx)
     {
         TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
+        return fcrsub.h_hMeanPt->GetBinContent(centBin);
+    }
+    double get_meanpt_jackknife(int centBin, int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
+
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+        mergedJack->Merge(sub_prof_temp);
+
+        FlowContainerTProfile2DReader fcrsub(mergedJack, this->name, this->isPID);
         return fcrsub.h_hMeanPt->GetBinContent(centBin);
     }
 };

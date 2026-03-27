@@ -1,6 +1,7 @@
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH2D.h"
 #include "TLegend.h"
 
 #define PIONFILE "result/res_pion.root"
@@ -18,10 +19,12 @@ void res_merger()
     TH1D *h_pr = f_pr->Get<TH1D>("hrhoPID");
 
     TCanvas *c1 = new TCanvas("c1", "c1", 1000, 800);
+    TH2D *frame = new TH2D("frame", "", 60, 0, 60, 100, -1, 1);
 
     h_pi->SetStats(0);
     h_ka->SetStats(0);
     h_pr->SetStats(0);
+    frame->SetStats(0);
 
     h_pi->SetLineColor(kRed);
     h_pi->SetLineWidth(2);
@@ -38,9 +41,10 @@ void res_merger()
     h_pr->SetMarkerColor(kGreen + 2);
     h_pr->SetMarkerStyle(kFullTriangleUp);
 
-    h_pr->Draw("SAME");
-    h_pi->Draw("SAME"); // "HIST"：仅画直方图线；若要数据点用 "EP"
-    h_ka->Draw("SAME"); // "SAME"：叠加在已有图上
+    frame->Draw();
+    h_pr->Draw("SAME P");
+    h_pi->Draw("SAME P"); // "HIST"：仅画直方图线；若要数据点用 "EP"
+    h_ka->Draw("SAME P"); // "SAME"：叠加在已有图上
 
 
     TLegend *leg = new TLegend(0.72, 0.72, 0.92, 0.92); // 坐标：(x1,y1,x2,y2)，NDC格式(0-1)

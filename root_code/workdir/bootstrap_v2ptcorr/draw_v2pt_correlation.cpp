@@ -8,11 +8,15 @@
 #include "TLine.h"
 #include "TProfile.h"
 #include "TProfile2D.h"
+#include "TProfile3D.h"
 #include <iostream>
 
-#define FILE "/home/huinaibing/Documents/datas4o2/AnalysisResults.root"
-
+#define FILE                                                                                                           \
+    "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/data4newmethod/"                \
+    "big_valueerror.root"
 // #define DEBUG
+
+// #define NEWMETHOD
 
 
 double get_cov_part1(int centBin)
@@ -21,38 +25,24 @@ double get_cov_part1(int centBin)
     TDirectory *dir = (TDirectory *)f->Get("pid-flow-pt-corr");
 
     TProfile3D *proOrigin = dir->Get<TDirectory>("meanptCentNbs")->Get<TProfile3D>("hCharged");
+    TProfile3D *proOriginpt = dir->Get<TDirectory>("meanptCentNbs")->Get<TProfile3D>("hChargedMeanpt");
 
-    TProfile *proMerged = new TProfile("proMerged", "proMerged", 300, 0, 3);
-    // merge 成一个图
-    for (int idxPt = 1; idxPt <= proOrigin->GetNbinsX(); idxPt++)
-    {
-        double weightValue = 0;
-        double sumWeight = 0;
-        for (int idxNbs = 1; idxNbs <= proOrigin->GetNbinsZ(); idxNbs++)
-        {
-            double weight = proOrigin->GetBinEntries(proOrigin->GetBin(idxPt, centBin, idxNbs));
-            if (weight == 0)
-            {
-                continue;
-            }
+    //proOrigin->GetYaxis()->SetRange(centBin, centBin);
 
-            weightValue += proOrigin->GetBinContent(idxPt, centBin, idxNbs) * weight;
-            sumWeight += weight;
-        }
 
-        if (sumWeight == 0)
-        {
-            continue;
-        }
-        // std::cout << idxPt << " " << sumWeight << std::endl;
-        proMerged->SetBinContent(idxPt, weightValue);
-        proMerged->SetBinEntries(idxPt, sumWeight);
+    TProfile2D *protemp2d = proOrigin->Project3DProfile("xy");
+    protemp2d->GetXaxis()->SetRange(centBin, centBin);
+    auto proMerged = protemp2d->ProfileY();
 
-        //std::cout << weightValue / sumWeight << " " << sumWeight << std::endl;
-    }
-    // return proMerged;
+    TProfile2D *protemp2dpt = proOriginpt->Project3DProfile("xy");
+    protemp2dpt->GetXaxis()->SetRange(centBin, centBin);
+    auto proMergedpt = protemp2dpt->ProfileY();
 
-    // std::cout << "===================================" << std::endl;
+    // auto C1 = new TCanvas("c1", "", 800, 600);
+    // proMerged->SetStats(0);
+    // proMerged->GetXaxis()->SetTitle("mean pt(GeV)");
+    // proMerged->GetYaxis()->SetTitle("C22");
+    // proMerged->Draw();
 
 
     double cov = 0;
@@ -67,7 +57,7 @@ double get_cov_part1(int centBin)
             continue;
         }
         // std::cout << i << " " << weight << std::endl;
-        double meanpt = proMerged->GetBinCenter(i);
+        double meanpt = proMergedpt->GetBinContent(i);
         double val = proMerged->GetBinContent(i);
         cov += meanpt * val * weight;
         point += weight;
@@ -77,10 +67,12 @@ double get_cov_part1(int centBin)
     }
     cov /= point;
 
-    // std::cout << "cov " << cov << " ptBar " << ptBar << " varbar " << valBar << std::endl;
+    // // std::cout << "cov " << cov << " ptBar " << ptBar << " varbar " << valBar << std::endl;
+    // auto C1 = new TCanvas("c1", "", 800, 600);
+    // proMerged->Draw();
+
     return cov;
 }
-
 
 TH1D *calculate_v2pt_corr(TProfile2D *h_prof_total, const char *name)
 {
@@ -100,8 +92,11 @@ TH1D *calculate_v2pt_corr(TProfile2D *h_prof_total, const char *name)
     for (int i = 1; i <= h_c22->GetNbinsX(); i++)
     {
         // get value from each bin
+#ifndef NEWMETHOD
         double cov_v2pt = h_covv2pt->GetBinContent(i);
-        //double cov_v2pt = get_cov_part1(i);
+#else
+        double cov_v2pt = get_cov_part1(i);
+#endif
         double c22 = h_c22->GetBinContent(i);
         double ptAve = h_ptave->GetBinContent(i);
         double c24 = h_c24->GetBinContent(i);
@@ -130,12 +125,14 @@ TH1D *calculate_v2pt_corr(TProfile2D *h_prof_total, const char *name)
                            sqrt(ptSquareAve - 2 * ptAve * meanpt + meanpt * meanpt) /
                            sqrt(c24 - 2 * c22full * c22full + c22 * c22);
         output->SetBinContent(i, v2ptcorre);
+        output->SetBinError(i, 0.001);
         // end calculate v2ptcorre
-        // std::cout << "cov_v2pt = " << cov_v2pt << std::endl;
+        std::cout << "cov = " << cov_v2pt - ptAve * c22_trackweighted << std::endl;
+        std::cout << ptAve * c22_trackweighted << std::endl;
         // std::cout << "ptAve = " << ptAve << std::endl;
         // std::cout << "c22_trackweighted = " << c22_trackweighted << std::endl;
         // std::cout << "================================" << std::endl;
-        std::cout << c22_trackweighted << std::endl;
+        // std::cout << c22_trackweighted << std::endl;
     }
 
     // clean up
@@ -155,7 +152,7 @@ void draw_v2pt_correlation()
 {
     // init and get prof
     TFile *f = TFile::Open(FILE);
-    TDirectory *dir = (TDirectory *)f->Get("pid-flow-pt-corr");
+    TDirectory *dir = (TDirectory *)f->Get("pid-flow-pt-corr_id44937");
     FlowContainer *fc_ch = (FlowContainer *)dir->Get("FlowContainerCharged");
     TProfile2D *h_prof_ch = fc_ch->GetProfile();
     TObjArray *arr = fc_ch->GetSubProfiles();
@@ -164,9 +161,16 @@ void draw_v2pt_correlation()
     // end init and get prof
 
     // get value
-    TCanvas *c1 = new TCanvas("c1", "c1", 1800, 1000);
+    // TCanvas *c1 = new TCanvas("c1", "c1", 1800, 1000);
     TH1D *res = calculate_v2pt_corr(h_prof_ch, "v2pt_correlation");
-    res->Draw();
+#ifdef NEWMETHOD
+    TFile *file = new TFile("new_method.root", "RECREATE");
+#else
+    TFile *file = new TFile("old_method.root", "RECREATE");
+#endif
+    res->Write();
+    file->Close();
+
     // get error
     // std::vector<double> error4eachbin;
     // for (int i = 1; i <= res->GetNbinsX(); i++)

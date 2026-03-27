@@ -8,7 +8,7 @@
 #include "TLegend.h"
 #include <iostream>
 
-#define MC_PATH "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/mc_new_include_its.root"
+#define MC_PATH "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/lhc23zzhpass5mctr639743.root"
 
 void draw_NUE_graph()
 {
@@ -20,14 +20,14 @@ void draw_NUE_graph()
 
     // open graph
     TH2D *hMcCentPt = (TH2D *)correction->Get("hPtCentMcGen");
-    TH2D *hDataCentPt = (TH2D *)correction->Get("hPtCentMcRec4ITSOnly");
+    TH2D *hDataCentPt = (TH2D *)correction->Get("hPtCentMcRec");
 
     // divide
     TCanvas *c3 = new TCanvas("c3", "c3", 1800, 1000);
     hDataCentPt->Divide(hMcCentPt);
     hDataCentPt->SetStats(0);
     hDataCentPt->Draw();
-    TFile *file_efficiency = new TFile("correctionsNUE/NUE2D4ITS.root", "RECREATE");
+    TFile *file_efficiency = new TFile("correctionsNUE/NUE2D_23zzhpass5_occ4000_tr639743.root", "RECREATE");
     hDataCentPt->SetName("ccdb_object");
     hDataCentPt->Write();
     file_efficiency->Close();

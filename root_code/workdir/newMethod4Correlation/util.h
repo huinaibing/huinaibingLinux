@@ -12,6 +12,8 @@ public:
         double cov = 0;
         double point = 0;
 
+        // std::cout << "===========================" << std::endl;
+
         for (int i = 1; i <= proMerged->GetNbinsX(); i++)
         {
             double weight = proMerged->GetBinEntries(i);
@@ -34,6 +36,12 @@ public:
             double val = proMerged->GetBinContent(i);
             cov += meanpt * val * weight;
             point += weight;
+
+
+            // std::cout << "///////////////////////////////" << std::endl;
+            // std::cout << "meanpt " << meanpt << std::endl;
+            // std::cout << "binc enter " << proMerged->GetBinCenter(i) << std::endl;
+            // std::cout << "///////////////////////////////" << std::endl;
         }
         cov /= point;
         return cov;
@@ -107,6 +115,32 @@ public:
 
         cov /= point;
         return cov;
+    }
+
+    static double get_cov(TProfile *proMerged, double meanptInCent, TProfile *proMergedpt)
+    {
+        double cov = 0;
+        double point = 0;
+
+        for (int i = 1; i <= proMerged->GetNbinsX(); i++)
+        {
+            double weight = proMerged->GetBinEntries(i);
+            double meanpt = proMergedpt->GetBinContent(i);
+
+            double val = proMerged->GetBinContent(i);
+            cov += (meanpt - meanptInCent) * val * weight;
+            point += weight;
+        }
+
+        cov /= point;
+        return cov;
+    }
+
+    static inline int64_t get_timestamp_nanoseconds()
+    {
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
     }
 };
 

@@ -1,0 +1,24 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.36.04                        https://root.cern |
+  | (c) 1995-2025, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for linuxx8664gcc on Mar 06 2026, 05:46:58                 |
+  | From tags/v6-36-04-alice9@v6-36-04-alice9                        |
+  | With c++ (GCC) 14.2.0                                            |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing calculate_PID_rho.cpp...
+hPionMeanptWeightC22pure
+1.03414e-06 cov
+2.92351e-06 cov
+5.22095e-06 cov
+7.9893e-06 cov
+1.27083e-05 cov
+2.13847e-05 cov
+2.95755e-05 cov
+3.26894e-05 cov
+2.7097e-05 cov
+2.55577e-05 cov
+4.24461e-05 cov
+============================
