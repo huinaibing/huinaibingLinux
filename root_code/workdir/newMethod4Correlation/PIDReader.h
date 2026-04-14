@@ -17,9 +17,41 @@
 
 
 // #define MERGE_BIN
-
+#define OUTPUTFIT
 #ifdef MERGE_BIN
 double bins[] = {0,
+
+                 0.5700000000000001,
+                 0.5710000000000001,
+                 0.5720000000000001,
+                 0.5730000000000001,
+                 0.5740000000000001,
+                 0.5750000000000001,
+                 0.5760000000000001,
+                 0.577,
+                 0.578,
+                 0.579,
+                 0.58,
+                 0.581,
+                 0.582,
+                 0.583,
+                 0.584,
+                 0.585,
+                 0.586,
+                 0.587,
+                 0.588,
+                 0.589,
+                 0.59,
+                 0.591,
+                 0.592,
+                 0.593,
+                 0.594,
+                 0.595,
+                 0.596,
+                 0.597,
+                 0.598,
+                 0.599,
+                 0.6,
                  0.601,
                  0.602,
                  0.603,
@@ -229,6 +261,48 @@ double bins[] = {0,
                  0.807,
                  0.808,
                  0.809,
+                 0.81,
+                 0.811,
+                 0.812,
+                 0.8130000000000001,
+                 0.8140000000000001,
+                 0.8150000000000001,
+                 0.8160000000000001,
+                 0.8170000000000001,
+                 0.8180000000000001,
+                 0.8190000000000001,
+                 0.8200000000000001,
+                 0.8210000000000001,
+                 0.8220000000000001,
+                 0.8230000000000001,
+                 0.8240000000000001,
+                 0.8250000000000001,
+                 0.8260000000000001,
+                 0.8270000000000001,
+                 0.8280000000000001,
+                 0.8290000000000001,
+                 0.8300000000000001,
+                 0.8310000000000001,
+                 0.8320000000000001,
+                 0.833,
+                 0.834,
+                 0.835,
+                 0.836,
+                 0.837,
+                 0.838,
+                 0.839,
+                 0.84,
+                 0.841,
+                 0.842,
+                 0.843,
+                 0.844,
+                 0.845,
+                 0.846,
+                 0.847,
+                 0.848,
+                 0.849,
+                 0.85,
+
                  3};
 
 int nBins = sizeof(bins) / sizeof(bins[0]) - 1;
@@ -311,6 +385,106 @@ public:
         this->PIDprofileDown = dir->Get<TDirectory>("meanptCentNbs")->Get<TProfile3D>(downName.c_str());
     }
 
+    TProfile *getSpecifiedCentBin_fit(int centBin)
+    {
+        TProfile2D *pro2dUp = this->PIDProfileUp->Project3DProfile("xy");
+        TProfile2D *pro2dDown = this->PIDprofileDown->Project3DProfile("xy");
+
+        pro2dUp->GetXaxis()->SetRange(centBin, centBin);
+        pro2dDown->GetXaxis()->SetRange(centBin, centBin);
+
+        TProfile *pro1DUp = pro2dUp->ProfileY();
+        TProfile *pro1DDown = pro2dDown->ProfileY();
+
+        // ==================== 新增拟合部分开始 ====================
+        // 1. 对 pro1DUp 进行二次函数拟合 (pol2 = 二阶多项式)
+        // 选项 "Q0": Q=安静模式(减少输出), 0=不绘制拟合曲线
+        pro1DUp->Fit("pol0", "Q0", "", 0., 3.);
+        TF1 *fitFuncUp = pro1DUp->GetFunction("pol0");
+        if (!fitFuncUp)
+        {
+            Error("getSpecifiedCentBin", "Fit to pro1DUp failed! Returning null.");
+            return nullptr;
+        }
+
+        // 2. 对 pro1DDown 进行二次函数拟合
+        pro1DDown->Fit("pol0", "Q0", "", 0., 3.);
+        TF1 *fitFuncDown = pro1DDown->GetFunction("pol0");
+        if (!fitFuncDown)
+        {
+            Error("getSpecifiedCentBin", "Fit to pro1DDown failed! Returning null.");
+            return nullptr;
+        }
+        // ==================== 新增拟合部分结束 ====================
+
+#ifdef OUTPUTFIT
+        {
+            // 1. 绘制 pro1DUp 的拟合结果
+            TCanvas *cUp =
+                new TCanvas(Form("cFitUp_cent%d", centBin), Form("Up Profile Fit (CentBin %d)", centBin), 800, 600);
+            cUp->SetGrid();
+
+            pro1DUp->SetTitle(Form("Up Profile - Pol2 Fit (CentBin %d);p_{T};Y Value", centBin));
+            pro1DUp->SetLineColor(kBlack);
+            pro1DUp->Draw();
+
+            fitFuncUp->SetLineColor(kRed);
+            fitFuncUp->SetLineWidth(2);
+            fitFuncUp->Draw("same");
+
+
+            cUp->SaveAs(Form("outputfit/fit_up_centbin_%d.root", centBin)); // 可选：同时保存 PNG
+
+            // 2. 绘制 pro1DDown 的拟合结果
+            TCanvas *cDown =
+                new TCanvas(Form("cFitDown_cent%d", centBin), Form("Down Profile Fit (CentBin %d)", centBin), 800, 600);
+            cDown->SetGrid();
+
+            pro1DDown->SetTitle(Form("Down Profile - Pol2 Fit (CentBin %d);p_{T};Y Value", centBin));
+            pro1DDown->SetLineColor(kBlack);
+            pro1DDown->Draw();
+
+            fitFuncDown->SetLineColor(kBlue);
+            fitFuncDown->SetLineWidth(2);
+            fitFuncDown->Draw("same");
+
+            cDown->SaveAs(Form("outputfit/fit_down_centbin_%d.root", centBin));
+
+            // 注意：在实际分析框架中，若不需要保留画布指针，可在此处 delete 以避免内存泄漏
+            // 但在交互式 ROOT 或简单脚本中通常可以省略
+            // delete cUp;
+            // delete cDown;
+        }
+#endif
+
+        TProfile *resProfile = new TProfile(std::to_string(Utils::get_timestamp_nanoseconds()).c_str(),
+                                            "",
+                                            pro1DUp->GetNbinsX(),
+                                            pro1DUp->GetXaxis()->GetXbins()->GetArray());
+
+        for (int idxPt = 1; idxPt <= pro1DUp->GetNbinsX(); idxPt++)
+        {
+            // 获取当前 bin 的 x 轴中心位置（用于代入拟合函数求值）
+            double xCenter = pro1DUp->GetBinCenter(idxPt);
+
+            // 使用拟合函数的 Eval 方法获取拟合值，替代原 GetBinContent
+            double upVal = fitFuncUp->Eval(xCenter);
+            double weight = pro1DUp->GetBinEntries(idxPt); // weight 仍使用原条目数
+            double downVal = fitFuncDown->Eval(xCenter);
+
+            if (downVal == 0)
+                continue;
+
+            double ptBinres = upVal * upVal / downVal;
+
+            resProfile->SetBinContent(idxPt, ptBinres * weight);
+            resProfile->SetBinEntries(idxPt, weight);
+        }
+
+        return resProfile;
+    }
+
+
     TProfile *getSpecifiedCentBin(int centBin)
     {
         TProfile2D *pro2dUp = this->PIDProfileUp->Project3DProfile("xy");
@@ -331,6 +505,23 @@ public:
 
 #endif
 
+        // ---------------- 新增：存储 pro1DUp 和 pro1DDown 到 ROOT 文件 ----------------
+        // 设置对象名称（包含中心度 bin 编号）
+        pro1DUp->SetName(Form("pro1DUp_centBin%d", centBin));
+        pro1DDown->SetName(Form("pro1DDown_centBin%d", centBin));
+
+        // 创建 ROOT 文件（RECREATE 模式覆盖已存在文件）
+        TFile *outFile = TFile::Open(Form("tmpres/profiles_centBin%d.root", centBin), "RECREATE");
+        if (outFile && outFile->IsOpen())
+        {
+            pro1DUp->Write();
+            pro1DDown->Write();
+            outFile->Close();
+            delete outFile;
+        }
+        // -----------------------------------------------------------------------------
+
+
         TProfile *resProfile = new TProfile(std::to_string(Utils::get_timestamp_nanoseconds()).c_str(),
                                             "",
                                             pro1DUp->GetNbinsX(),
@@ -344,6 +535,165 @@ public:
 
             if (downVal == 0)
                 continue;
+
+
+            double ptBinres = upVal * upVal / downVal;
+
+
+            resProfile->SetBinContent(idxPt, ptBinres * weight);
+            resProfile->SetBinEntries(idxPt, weight);
+        }
+
+        return resProfile;
+    }
+
+
+    TProfile *getUpGraph(int centBin)
+    {
+        TProfile3D *cloned3D = static_cast<TProfile3D *>(
+            this->PIDProfileUp->Clone(std::to_string(Utils::get_timestamp_nanoseconds()).c_str()));
+        TProfile2D *pro2dUp = cloned3D->Project3DProfile("xy");
+        pro2dUp->GetXaxis()->SetRange(centBin, centBin);
+        TProfile *pro1DUp = pro2dUp->ProfileY();
+
+
+        delete pro2dUp;
+        delete cloned3D;
+
+        return pro1DUp;
+    }
+
+    TProfile *getDownGraph(int centBin)
+    {
+        // 1. Clone 原始 3D 对象 (注意变量名是 PIDprofileDown，保持你的拼写)
+        TProfile3D *cloned3D = static_cast<TProfile3D *>(
+            this->PIDprofileDown->Clone(std::to_string(Utils::get_timestamp_nanoseconds()).c_str()));
+
+        // 2. 投影为 2D
+        TProfile2D *pro2dDown = cloned3D->Project3DProfile("xy");
+
+        // 3. 对 2D 进行切片并投影为 1D
+        pro2dDown->GetXaxis()->SetRange(centBin, centBin);
+        TProfile *pro1DDown = pro2dDown->ProfileY();
+
+        // ---------------------------------------------------------
+        // 内存管理清理区域
+        // ---------------------------------------------------------
+
+        // 4. 删除中间的 2D 对象
+        delete pro2dDown;
+
+        // 5. 删除 Clone 出来的 3D 对象
+        delete cloned3D;
+
+        // 6. 返回最终结果
+        return pro1DDown;
+    }
+
+
+    TH1D *getdWeightdMeanpt(int centBin)
+    {
+        TProfile2D *pro2dUp = this->PIDprofileDown->Project3DProfile("xy");
+        pro2dUp->GetXaxis()->SetRange(centBin, centBin);
+        TProfile *pro1DUp = pro2dUp->ProfileY();
+
+        auto *dwdpt = new TH1D(std::to_string(Utils::get_timestamp_nanoseconds()).c_str(),
+                               "",
+                               pro1DUp->GetNbinsX(),
+                               pro1DUp->GetXaxis()->GetXbins()->GetArray());
+
+        // dwdpt->Sumw2();
+
+        for (int idxPt = 1; idxPt <= pro1DUp->GetNbinsX(); idxPt++)
+        {
+            double weight = pro1DUp->GetBinEntries(idxPt);
+            dwdpt->SetBinContent(idxPt, weight / dwdpt->GetBinWidth(idxPt));
+            dwdpt->SetBinError(idxPt, TMath::Sqrt(weight) / dwdpt->GetBinWidth(idxPt));
+        }
+
+        //dwdpt->Scale(1. / dwdpt->Integral());
+
+
+        return dwdpt;
+    }
+
+    TH1D *getdWeightdMeanpt(int centBin, int bootstrapIdx)
+    {
+        // 1. 克隆原始的 3D Profile，避免对原对象造成修改
+        TProfile3D *tmpUp3D =
+            (TProfile3D *)this->PIDprofileDown->Clone(std::to_string(Utils::get_timestamp_nanoseconds()).c_str());
+
+        // 2. 在 Z 轴上设置范围，只取指定的 Bootstrap 样本 (注意 ROOT bin 从 1 开始)
+        tmpUp3D->GetZaxis()->SetRange(bootstrapIdx + 1, bootstrapIdx + 1);
+
+        // 3. 投影到 XY 平面得到 2D Profile
+        TProfile2D *pro2dUp = tmpUp3D->Project3DProfile("xy");
+
+        // 4. 在 X 轴（中心度）上设置范围，只取指定的中心度 bin
+        pro2dUp->GetXaxis()->SetRange(centBin, centBin);
+
+        // 5. 投影到 Y 轴（pT）得到 1D Profile
+        TProfile *pro1DUp = pro2dUp->ProfileY();
+
+        // 6. 创建输出的 TH1D
+        auto *dwdpt = new TH1D(std::to_string(Utils::get_timestamp_nanoseconds()).c_str(),
+                               "",
+                               pro1DUp->GetNbinsX(),
+                               pro1DUp->GetXaxis()->GetXbins()->GetArray());
+
+        // 7. 填充直方图内容 (逻辑与原函数保持一致)
+        for (int idxPt = 1; idxPt <= pro1DUp->GetNbinsX(); idxPt++)
+        {
+            double weight = pro1DUp->GetBinEntries(idxPt);
+            dwdpt->SetBinContent(idxPt, weight / dwdpt->GetBinWidth(idxPt));
+            dwdpt->SetBinError(idxPt, TMath::Sqrt(weight) / dwdpt->GetBinWidth(idxPt));
+        }
+
+        // 8. 清理临时克隆的对象，防止内存泄漏
+        delete tmpUp3D;
+
+        return dwdpt;
+    }
+
+
+    TProfile *getSpecifiedCentBin(int centBin, const double *reBins, int nreBins)
+    {
+        TProfile2D *pro2dUp = this->PIDProfileUp->Project3DProfile("xy");
+        TProfile2D *pro2dDown = this->PIDprofileDown->Project3DProfile("xy");
+
+        pro2dUp->GetXaxis()->SetRange(centBin, centBin);
+        pro2dDown->GetXaxis()->SetRange(centBin, centBin);
+
+
+        TProfile *pro1DUptmp = pro2dUp->ProfileY();
+        TProfile *pro1DDowntmp = pro2dDown->ProfileY();
+
+        TProfile *pro1DUp = (TProfile *)pro1DUptmp->Rebin(nreBins, "", reBins);
+        TProfile *pro1DDown = (TProfile *)pro1DDowntmp->Rebin(nreBins, "", reBins);
+        TFile *outFile = new TFile(Form("rebintest/output%d.root", centBin), "RECREATE");
+        pro1DUp->SetName(std::to_string(Utils::get_timestamp_nanoseconds()).c_str());
+        pro1DUp->Write();
+        pro1DDown->SetName(std::to_string(Utils::get_timestamp_nanoseconds()).c_str());
+        pro1DDown->Write();
+        outFile->Close();
+
+
+        TProfile *resProfile = new TProfile(std::to_string(Utils::get_timestamp_nanoseconds()).c_str(),
+                                            "",
+                                            pro1DUp->GetNbinsX(),
+                                            pro1DUp->GetXaxis()->GetXbins()->GetArray());
+
+        for (int idxPt = 1; idxPt <= pro1DUp->GetNbinsX(); idxPt++)
+        {
+            double upVal = pro1DUp->GetBinContent(idxPt);
+            double weight = pro1DUp->GetBinEntries(idxPt);
+            double downVal = pro1DDown->GetBinContent(idxPt);
+
+            if (downVal == 0)
+                continue;
+
+            // if (centBin == 4)
+            //     std::cout << weight << "weight" << std::endl;
 
 
             double ptBinres = upVal * upVal / downVal;
@@ -369,6 +719,16 @@ public:
 #else
         return (TProfile *)protemp2d->ProfileY()->Rebin(nBins, "", bins);
 #endif
+    }
+
+    TProfile *getSpecifiedCentBin(int centBin, const char *graph_name, int nreBins, double *reBins)
+    {
+        TProfile2D *protemp2d =
+            dir->Get<TDirectory>("meanptCentNbs")->Get<TProfile3D>(graph_name)->Project3DProfile("xy");
+        protemp2d->GetXaxis()->SetRange(centBin, centBin);
+
+
+        return (TProfile *)protemp2d->ProfileY()->Rebin(nreBins, "", reBins);
     }
 
     TProfile *getSpecifiedCentBin(int centBin, int bootstrapIdx)

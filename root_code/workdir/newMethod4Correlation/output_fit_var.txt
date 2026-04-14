@@ -1,0 +1,68 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.36.04                        https://root.cern |
+  | (c) 1995-2025, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for linuxx8664gcc on Mar 06 2026, 05:46:58                 |
+  | From tags/v6-36-04-alice9@v6-36-04-alice9                        |
+  | With c++ (GCC) 14.2.0                                            |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing calculate_PID_fit.cpp...
+hPionMeanptWeightPidflow
+cent 1
+varpt 0.00938209 varc22 0.000700583
+===
+xMin 0.667526 xmax 0.797474
+int_weight 8.06191e+14
+cov centBIn 1 res9.30692e-07
+rho 0.141595
+cent 2
+varpt 0.0109126 varc22 0.00145297
+===
+xMin 0.663608 xmax 0.811392
+int_weight 4.4377e+14
+cov centBIn 2 res2.97724e-06
+rho 0.187772
+cent 3
+varpt 0.012317 varc22 0.00226437
+===
+xMin 0.654964 xmax 0.818036
+int_weight 2.49241e+14
+cov centBIn 3 res4.88941e-06
+rho 0.175309
+cent 4
+varpt 0.0138493 varc22 0.00303976
+===
+xMin 0.645594 xmax 0.821406
+int_weight 1.40502e+14
+cov centBIn 4 res7.60557e-06
+rho 0.18066
+cent 5
+varpt 0.0161323 varc22 0.00387876
+===
+xMin 0.635855 xmax 0.837145
+int_weight 1.19999e+14
+cov centBIn 5 res1.22474e-05
+rho 0.195728
+cent 6
+varpt 0.0197945 varc22 0.00529104
+===
+xMin 0.605197 xmax 0.849803
+int_weight 3.47362e+13
+cov centBIn 6 res2.15951e-05
+rho 0.206191
+cent 7
+varpt 0.0241408 varc22 0.00578309
+===
+xMin 0.573265 xmax 0.863735
+int_weight 8.67915e+12
+cov centBIn 7 res2.63968e-05
+rho 0.189077
+cent 8
+varpt 0.0291137 varc22 0.00330159
+===
+xMin 0.554621 xmax 0.860379
+int_weight 1.76182e+12
+cov centBIn 8 res3.42371e-05
+rho 0.356186

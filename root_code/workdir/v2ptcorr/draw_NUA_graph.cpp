@@ -1,20 +1,26 @@
-#include "TFile.h"
-#include "TDirectory.h"
-#include "TH3.h"
-#include "THnSparse.h"
+#include "GFWWeights.h"
 #include "TCanvas.h"
+#include "TDirectory.h"
+#include "TFile.h"
+#include "TH3.h"
 #include "THn.h"
+#include "THnSparse.h"
 #include <iostream>
 
 using namespace std;
 
+#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/correction/NUAFile/arpass3_NUA_bugfix.root"
+
 void draw_NUA_graph()
 {
     // get graph
-    int runlist[8] = {544095, 544098, 544116, 544121, 544122, 544123, 544124, 544091}; // for zzh
+    int runlist[] = {559781, 559802, 559803, 559827, 559843, 559856, 559917, 559933, 559966, 559968,
+                     559969, 559970, 559987, 560012, 560031, 560033, 560049, 560066, 560067, 560070,
+                     560089, 560090, 560105, 560106, 560123, 560127, 560141, 560142, 560184};
+    int numberOfRun = sizeof(runlist) / sizeof(runlist[0]);
     GFWWeights *fWeightsREF = nullptr;
-    TFile *file = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pass5_newncls_geneNUA44937.root");
-    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr_id44937");
+    TFile *file = TFile::Open(FILE);
+    TDirectory *dir_main = (TDirectory *)file->Get("pid-flow-pt-corr");
     TDirectory *correction = (TDirectory *)dir_main->Get("correction");
     THnSparseF *grh = (THnSparseF *)correction->Get("hRunNumberPhiEtaVertex");
     // end graph
@@ -22,12 +28,17 @@ void draw_NUA_graph()
     // ... (前面的代码不变)
 
     // loop all the runList
-    for (int idxRun = 0; idxRun < 8; idxRun++)
+    for (int idxRun = 0; idxRun < numberOfRun; idxRun++)
     {
+        if (runlist[idxRun] != 559827 && runlist[idxRun] != 560090 && runlist[idxRun] != 560123)
+            continue;
+
+
         std::cout << "Processing run " << runlist[idxRun] << std::endl;
 
         // 1. 创建输出文件
-        TFile *output_file = TFile::Open(Form("correction_pass5_newncls/pass5zzh_NUA_%d.root", runlist[idxRun]), "RECREATE");
+        TFile *output_file =
+            TFile::Open(Form("correction_arpass3_small/arpass3_NUA_%d.root", runlist[idxRun]), "RECREATE");
         if (!output_file || output_file->IsZombie())
             continue;
 
@@ -36,8 +47,10 @@ void draw_NUA_graph()
         fWeightsREF->init(true, false);
 
         // 3. 处理直方图投影
-        grh->GetAxis(0)->SetRange(idxRun + 1, idxRun + 1);
-        TH3D *NUA = (TH3D *)grh->Projection(1, 2, 3);
+        auto grhtmp = (THnSparseF *)grh->Clone("tmp");
+
+        grhtmp->GetAxis(0)->SetRange(idxRun + 1, idxRun + 1);
+        TH3D *NUA = (TH3D *)grhtmp->Projection(1, 2, 3);
 
         // 【关键】切断 NUA 与当前目录的联系，防止它被 output_file 意外接管
         // 因为我们只是用它来临时读取数据，用完就删掉

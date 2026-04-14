@@ -246,6 +246,22 @@ public:
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
         return fcrsub.h_ptAve->GetBinContent(centBin);
     }
+    double get_ptave_jackknife(int centBin, int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
+
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+        mergedJack->Merge(sub_prof_temp);
+
+        FlowContainerTProfile2DReader fcrsub(mergedJack, this->name, this->isPID);
+        return fcrsub.h_ptAve->GetBinContent(centBin);
+    }
     // =====================================
     double get_c22_trackweight(int centBin)
     {
@@ -256,6 +272,22 @@ public:
     {
         TProfile2D *h_sub_prof = (TProfile2D *)this->sub_prof->At(bootstrapIdx);
         FlowContainerTProfile2DReader fcrsub(h_sub_prof, this->name, this->isPID);
+        return fcrsub.h_c22TrackWeight->GetBinContent(centBin);
+    }
+    double get_c22_trackweight_jackknife(int centBin, int jackIdx)
+    {
+        TObjArray *sub_prof_temp =
+            (TObjArray *)this->sub_prof->Clone(std::to_string(get_random_int(0, 1000000)).c_str());
+        sub_prof_temp->RemoveAt(jackIdx);
+
+        TProfile2D *mergedJack = 0;
+        if (jackIdx == 0)
+            mergedJack = (TProfile2D *)sub_prof_temp->At(1);
+        else
+            mergedJack = (TProfile2D *)sub_prof_temp->At(0);
+        mergedJack->Merge(sub_prof_temp);
+
+        FlowContainerTProfile2DReader fcrsub(mergedJack, this->name, this->isPID);
         return fcrsub.h_c22TrackWeight->GetBinContent(centBin);
     }
     // ==============================================

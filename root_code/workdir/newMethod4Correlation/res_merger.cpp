@@ -4,9 +4,9 @@
 #include "TH2D.h"
 #include "TLegend.h"
 
-#define PIONFILE "result/res_pion.root"
-#define KAONFILE "result/res_kaon.root"
-#define PROTONFILE "result/res_proton.root"
+#define PIONFILE "result_fit/res_pion.root"
+#define KAONFILE "result_fit/res_kaon.root"
+#define PROTONFILE "result_fit/res_proton.root"
 
 void res_merger()
 {
@@ -14,9 +14,9 @@ void res_merger()
     TFile *f_ka = TFile::Open(KAONFILE);
     TFile *f_pr = TFile::Open(PROTONFILE);
 
-    TH1D *h_pi = f_pi->Get<TH1D>("hrhoPID");
-    TH1D *h_ka = f_ka->Get<TH1D>("hrhoPID");
-    TH1D *h_pr = f_pr->Get<TH1D>("hrhoPID");
+    TH1D *h_pi = f_pi->Get<TH1D>("rho");
+    TH1D *h_ka = f_ka->Get<TH1D>("rho");
+    TH1D *h_pr = f_pr->Get<TH1D>("rho");
 
     TCanvas *c1 = new TCanvas("c1", "c1", 1000, 800);
     TH2D *frame = new TH2D("frame", "", 60, 0, 60, 100, -1, 1);

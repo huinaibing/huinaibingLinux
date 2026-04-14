@@ -9,9 +9,9 @@
 
 void determineStamps01()
 {
-  int runs[] = {544095, 544098, 544116, 544121, 544122, 544123, 544124, 544091};
+  int runs[] = {564468, 564472};
 
-  int nRuns = 8;
+  int nRuns = sizeof(runs) / sizeof(runs[0]);
 
   o2::ccdb::CcdbApi ccdb_api;
   ccdb_api.init("https://alice-ccdb.cern.ch");
@@ -26,7 +26,7 @@ void determineStamps01()
 
     cout << "Run " << runs[ii] << " SOR " << tsSOR << " EOR " << tsEOR << endl;
 
-    TFile *fileREF = new TFile(Form("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/correction_pass5_newncls/pass5zzh_NUA_%d.root", runs[ii]), "READ");
+    TFile *fileREF = new TFile(Form("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/correctionNeNe/afpass2_NUA_%d.root", runs[ii]), "READ");
     TObject *fWeightsREF = nullptr;
     fWeightsREF = fileREF->Get("ccdb_object");
 
@@ -38,7 +38,7 @@ void determineStamps01()
     cout << "Attempting CCDB upload..." << endl;
     try
     {
-      ccdb_api.storeAsTFileAny(fWeightsREF, "Users/q/qiuyu/pass5/newncls/tr624786", metadata, tsSOR, tsEOR);
+      ccdb_api.storeAsTFileAny(fWeightsREF, "Users/q/qiuyu/NeNe/afpass2/tr644077", metadata, tsSOR, tsEOR);
     }
     catch (std::exception const &e)
     {

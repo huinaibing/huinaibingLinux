@@ -1,17 +1,19 @@
-#include <iostream>
+#include "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/WorkDirUtils/Utils4V2pTCorr.h"
+#include "FlowContainer.h"
+#include "TCanvas.h"
 #include "TF1.h"
 #include "TFile.h"
-#include "TProfile.h"
-#include "TCanvas.h"
-#include "TH1.h"
-#include "TProfile2D.h"
 #include "TGraphErrors.h"
+#include "TH1.h"
 #include "TLegend.h"
-#include "FlowContainer.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include <iostream>
 #include <vector>
-#include "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/WorkDirUtils/Utils4V2pTCorr.h"
 
-#define FILE "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/new_method_big.root"
+#define FILE                                                                                                           \
+    "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/newMethod4Correlation/data4newmethod/"                \
+    "pidTPCTOF_purity_big.root"
 
 #define BLOCK1 // event count check
 #define BLOCK2 // phi correction check
@@ -22,225 +24,237 @@
 
 namespace lambdaFunction
 {
-    TH1D *get_v22_primeprime(TProfile2D *, TProfile2D *);
-    TH1D *get_v22_prime(TProfile2D *, TProfile2D *);
-}
+TH1D *get_v22_primeprime(TProfile2D *, TProfile2D *);
+TH1D *get_v22_prime(TProfile2D *, TProfile2D *);
+} // namespace lambdaFunction
 
 namespace qaUtil4Fc
 {
-    void drawFlowV2Comparison(const TString &particleName, const TString &particleLatex,
-                              const TString &ptBin, const TString &ptRange,
-                              FlowContainerManager &fcm)
+void drawFlowV2Comparison(const TString &particleName,
+                          const TString &particleLatex,
+                          const TString &ptBin,
+                          const TString &ptRange,
+                          FlowContainerManager &fcm)
+{
+    // 获取两个v2直方图
+    TH1D *v22_primeprime = fcm.getHistFrom2FC(lambdaFunction::get_v22_primeprime);
+    TH1D *v22_prime = fcm.getHistFrom2FC(lambdaFunction::get_v22_prime);
+
+    // 创建画布（动态拼接ptBin，避免不同pt区间画布重名）
+    TCanvas *c = new TCanvas(Form("c_%s_%s", particleName.Data(), ptBin.Data()),
+                             Form("v2 comparation for %s pt %s", particleName.Data(), ptBin.Data()),
+                             800,
+                             600);
+
+    // 设置直方图样式（统一风格，pt区间动态显示在标题中）
+    v22_primeprime->SetLineColor(kRed);
+    v22_prime->SetLineColor(kBlue);
+    v22_primeprime->SetTitle(
+        Form("v_{2} comparation, %s, %s GeV/c;Centrality (%%);v_{2}", particleLatex.Data(), ptRange.Data()));
+    v22_primeprime->SetStats(0); // 关闭统计框
+
+    // 绘制直方图
+    v22_primeprime->Draw();
+    v22_prime->Draw("SAME");
+
+    // 创建并绘制图例
+    TLegend *leg = new TLegend(0.6, 0.7, 0.8, 0.8);
+    leg->AddEntry(v22_primeprime, "v_{2}\"{2}");
+    leg->AddEntry(v22_prime, "v_{2}\'{2}");
+    leg->Draw("SAME");
+
+    // 2. 计算 v22_primeprime / v22_prime 比值图
+    // 克隆v22_primeprime作为比值图载体（避免修改原直方图数据）
+    TH1D *v22_ratio = (TH1D *)v22_prime->Clone(Form("v22_ratio_%s_%s", particleName.Data(), ptBin.Data()));
+    // 逐元相除：Divide(分母直方图, 误差处理模式)
+    // kDivideByBinContent：按bin内容相除；kSameErrors：保持原直方图误差（适合对比场景）
+    for (int i = 1; i < v22_ratio->GetNbinsX(); i++)
     {
-        // 获取两个v2直方图
-        TH1D *v22_primeprime = fcm.getHistFrom2FC(lambdaFunction::get_v22_primeprime);
-        TH1D *v22_prime = fcm.getHistFrom2FC(lambdaFunction::get_v22_prime);
-
-        // 创建画布（动态拼接ptBin，避免不同pt区间画布重名）
-        TCanvas *c = new TCanvas(Form("c_%s_%s", particleName.Data(), ptBin.Data()),
-                                 Form("v2 comparation for %s pt %s", particleName.Data(), ptBin.Data()),
-                                 800, 600);
-
-        // 设置直方图样式（统一风格，pt区间动态显示在标题中）
-        v22_primeprime->SetLineColor(kRed);
-        v22_prime->SetLineColor(kBlue);
-        v22_primeprime->SetTitle(Form("v_{2} comparation, %s, %s GeV/c;Centrality (%%);v_{2}",
-                                      particleLatex.Data(), ptRange.Data()));
-        v22_primeprime->SetStats(0); // 关闭统计框
-
-        // 绘制直方图
-        v22_primeprime->Draw();
-        v22_prime->Draw("SAME");
-
-        // 创建并绘制图例
-        TLegend *leg = new TLegend(0.6, 0.7, 0.8, 0.8);
-        leg->AddEntry(v22_primeprime, "v_{2}\"{2}");
-        leg->AddEntry(v22_prime, "v_{2}\'{2}");
-        leg->Draw("SAME");
-
-        // 2. 计算 v22_primeprime / v22_prime 比值图
-        // 克隆v22_primeprime作为比值图载体（避免修改原直方图数据）
-        TH1D *v22_ratio = (TH1D *)v22_prime->Clone(Form("v22_ratio_%s_%s", particleName.Data(), ptBin.Data()));
-        // 逐元相除：Divide(分母直方图, 误差处理模式)
-        // kDivideByBinContent：按bin内容相除；kSameErrors：保持原直方图误差（适合对比场景）
-        for (int i = 1; i < v22_ratio->GetNbinsX(); i++)
+        double denom = v22_primeprime->GetBinContent(i);
+        if (denom != 0)
         {
-            double denom = v22_primeprime->GetBinContent(i);
-            if (denom != 0)
-            {
-                double ratio = v22_ratio->GetBinContent(i) / denom;
-                v22_ratio->SetBinContent(i, ratio);
-                // 误差计算：假设原误差为σ1和σ2，使用误差传播公式计算比值误差
-                double err1 = v22_ratio->GetBinError(i);
-                double err2 = v22_primeprime->GetBinError(i);
-                double ratio_err = ratio * TMath::Sqrt((err1 / v22_ratio->GetBinContent(i)) * (err1 / v22_ratio->GetBinContent(i)) +
-                                                       (err2 / denom) * (err2 / denom));
-                v22_ratio->SetBinError(i, ratio_err);
-            }
+            double ratio = v22_ratio->GetBinContent(i) / denom;
+            v22_ratio->SetBinContent(i, ratio);
+            // 误差计算：假设原误差为σ1和σ2，使用误差传播公式计算比值误差
+            double err1 = v22_ratio->GetBinError(i);
+            double err2 = v22_primeprime->GetBinError(i);
+            double ratio_err =
+                ratio * TMath::Sqrt((err1 / v22_ratio->GetBinContent(i)) * (err1 / v22_ratio->GetBinContent(i)) +
+                                    (err2 / denom) * (err2 / denom));
+            v22_ratio->SetBinError(i, ratio_err);
         }
-        TCanvas *c_ratio = new TCanvas(Form("c_ratio_%s_%s", particleName.Data(), ptBin.Data()),
-                                       Form("v_{2}\'{2} / v_{2}\"{2} for %s pt %s", particleName.Data(), ptBin.Data()),
-                                       800, 600);
-        v22_ratio->SetTitle(Form("v_{2}\'{2} / v_{2}\"{2}, %s, %s GeV/c;Centrality (%%);Ratio", particleLatex.Data(), ptRange.Data()));
-        v22_ratio->SetStats(0);
-        v22_ratio->GetYaxis()->SetRangeUser(0.8, 1.2); // 设置y轴范围便于观察偏离1的情况
-        v22_ratio->Draw();
     }
+    TCanvas *c_ratio = new TCanvas(Form("c_ratio_%s_%s", particleName.Data(), ptBin.Data()),
+                                   Form("v_{2}\'{2} / v_{2}\"{2} for %s pt %s", particleName.Data(), ptBin.Data()),
+                                   800,
+                                   600);
+    v22_ratio->SetTitle(
+        Form("v_{2}\'{2} / v_{2}\"{2}, %s, %s GeV/c;Centrality (%%);Ratio", particleLatex.Data(), ptRange.Data()));
+    v22_ratio->SetStats(0);
+    v22_ratio->GetYaxis()->SetRangeUser(0.8, 1.2); // 设置y轴范围便于观察偏离1的情况
+    v22_ratio->Draw();
+}
 
-    /**
+/**
      * @brief Get the v22 v24 object
      *
      * @param fc_ch
      * @param option IMPORTANT, if opt != 1, the v22 is v22pure for pid, v24 is meaningless
      * @return std::vector<TH1D *>
      */
-    std::vector<TH1D *> get_v22_v24(FlowContainer *fc_ch, int option = 1)
-    {
-        TProfile2D *h_prof_ch = fc_ch->GetProfile();
+std::vector<TH1D *> get_v22_v24(FlowContainer *fc_ch, int option = 1)
+{
+    TProfile2D *h_prof_ch = fc_ch->GetProfile();
 
-        TProfile *h_c22 = 0;
-        if (option == 1)
+    TProfile *h_c22 = 0;
+    if (option == 1)
+    {
+        h_c22 = h_prof_ch->ProfileX("c22", 1, 1);
+    }
+    else
+    {
+        h_c22 = h_prof_ch->ProfileX("c22", 16, 16);
+    }
+    TProfile *h_c24 = h_prof_ch->ProfileX("c24", 3, 3);
+
+    TProfile *h_c22full = h_prof_ch->ProfileX("c22full", 5, 5);
+
+    TH1D *v22 = new TH1D("v22",
+                         "v2{2} for charged;Centrality (%);v2{2}",
+                         h_c22->GetNbinsX(),
+                         h_c22->GetXaxis()->GetXbins()->GetArray());
+    TH1D *v24 = new TH1D("v24",
+                         "v2{4} for charged;Centrality (%);v2{4}",
+                         h_c24->GetNbinsX(),
+                         h_c24->GetXaxis()->GetXbins()->GetArray());
+
+    // fill v2{2} and v2{4}
+    for (int i = 1; i <= h_c22->GetNbinsX(); i++)
+    {
+        double c22 = h_c22->GetBinContent(i);
+        if (c22 < 0)
         {
-            h_c22 = h_prof_ch->ProfileX("c22", 1, 1);
+            v22->SetBinContent(i, 0);
         }
         else
         {
-            h_c22 = h_prof_ch->ProfileX("c22", 16, 16);
+            v22->SetBinContent(i, TMath::Sqrt(c22));
         }
-        TProfile *h_c24 = h_prof_ch->ProfileX("c24", 3, 3);
 
-        TProfile *h_c22full = h_prof_ch->ProfileX("c22full", 5, 5);
-
-        TH1D *v22 = new TH1D("v22", "v2{2} for charged;Centrality (%);v2{2}", h_c22->GetNbinsX(), h_c22->GetXaxis()->GetXbins()->GetArray());
-        TH1D *v24 = new TH1D("v24", "v2{4} for charged;Centrality (%);v2{4}", h_c24->GetNbinsX(), h_c24->GetXaxis()->GetXbins()->GetArray());
-
-        // fill v2{2} and v2{4}
-        for (int i = 1; i <= h_c22->GetNbinsX(); i++)
+        double c24 = h_c24->GetBinContent(i);
+        double c22full = h_c22full->GetBinContent(i);
+        if (2 * c22full * c22full - c24 < 0)
         {
-            double c22 = h_c22->GetBinContent(i);
-            if (c22 < 0)
-            {
-                v22->SetBinContent(i, 0);
-            }
-            else
-            {
-                v22->SetBinContent(i, TMath::Sqrt(c22));
-            }
-
-            double c24 = h_c24->GetBinContent(i);
-            double c22full = h_c22full->GetBinContent(i);
-            if (2 * c22full * c22full - c24 < 0)
-            {
-                v24->SetBinContent(i, 0);
-            }
-            else
-            {
-                v24->SetBinContent(i, TMath::Sqrt(TMath::Sqrt(2 * c22full * c22full - c24)));
-            }
+            v24->SetBinContent(i, 0);
         }
-        // end fill v2{2} and v2{4}
-
-        // calculate error for v2{2} and v2{4}
-        std::vector<double> error4eachbin;
-        std::vector<double> error4eachbin_v24;
-        for (int i = 1; i <= v22->GetNbinsX(); i++)
+        else
         {
-            error4eachbin.push_back(0.0);
-            error4eachbin_v24.push_back(0.0);
+            v24->SetBinContent(i, TMath::Sqrt(TMath::Sqrt(2 * c22full * c22full - c24)));
         }
-        TObjArray *arr = fc_ch->GetSubProfiles();
-        int nsub = arr->GetEntriesFast();
-
-        // loop all subevents
-        for (int i = 0; i < nsub; i++)
-        {
-            TProfile2D *h_sub_prof = (TProfile2D *)arr->At(i);
-            TProfile *h_sub_c22 = 0;
-            if (option == 1)
-            {
-                h_sub_c22 = h_sub_prof->ProfileX("sub_c22", 1, 1);
-            }
-            else
-            {
-                h_sub_c22 = h_sub_prof->ProfileX("sub_c22", 16, 16);
-            }
-            TProfile *h_sub_c24 = h_sub_prof->ProfileX("sub_c24", 3, 3);
-            for (int j = 1; j <= h_sub_c22->GetNbinsX(); j++)
-            {
-                double c22_sub = h_sub_c22->GetBinContent(j);
-                double c24_sub = h_sub_c24->GetBinContent(j);
-
-                double v2_sub = 0.0;
-                if (c22_sub >= 0)
-                {
-                    v2_sub = TMath::Sqrt(c22_sub);
-                }
-                double diff = v2_sub - v22->GetBinContent(j);
-                error4eachbin[j - 1] += diff * diff;
-
-                double v4_sub = 0.0;
-                if (2 * c22_sub * c22_sub - c24_sub >= 0)
-                {
-                    v4_sub = TMath::Sqrt(TMath::Sqrt(2 * c22_sub * c22_sub - c24_sub));
-                }
-                double diff4 = v4_sub - v24->GetBinContent(j);
-                error4eachbin_v24[j - 1] += diff4 * diff4;
-            }
-        }
-        // end loop all subevents
-        for (int i = 0; i < error4eachbin.size(); i++)
-        {
-            double stddev = TMath::Sqrt(error4eachbin[i] / (nsub - 1));
-            v22->SetBinError(i + 1, stddev);
-
-            double stddev4 = TMath::Sqrt(error4eachbin_v24[i] / (nsub - 1));
-            v24->SetBinError(i + 1, stddev4);
-        }
-        // end calculate error for v2{2}
-
-        return {v22, v24};
     }
+    // end fill v2{2} and v2{4}
+
+    // calculate error for v2{2} and v2{4}
+    std::vector<double> error4eachbin;
+    std::vector<double> error4eachbin_v24;
+    for (int i = 1; i <= v22->GetNbinsX(); i++)
+    {
+        error4eachbin.push_back(0.0);
+        error4eachbin_v24.push_back(0.0);
+    }
+    TObjArray *arr = fc_ch->GetSubProfiles();
+    int nsub = arr->GetEntriesFast();
+
+    // loop all subevents
+    for (int i = 0; i < nsub; i++)
+    {
+        TProfile2D *h_sub_prof = (TProfile2D *)arr->At(i);
+        TProfile *h_sub_c22 = 0;
+        if (option == 1)
+        {
+            h_sub_c22 = h_sub_prof->ProfileX("sub_c22", 1, 1);
+        }
+        else
+        {
+            h_sub_c22 = h_sub_prof->ProfileX("sub_c22", 16, 16);
+        }
+        TProfile *h_sub_c24 = h_sub_prof->ProfileX("sub_c24", 3, 3);
+        for (int j = 1; j <= h_sub_c22->GetNbinsX(); j++)
+        {
+            double c22_sub = h_sub_c22->GetBinContent(j);
+            double c24_sub = h_sub_c24->GetBinContent(j);
+
+            double v2_sub = 0.0;
+            if (c22_sub >= 0)
+            {
+                v2_sub = TMath::Sqrt(c22_sub);
+            }
+            double diff = v2_sub - v22->GetBinContent(j);
+            error4eachbin[j - 1] += diff * diff;
+
+            double v4_sub = 0.0;
+            if (2 * c22_sub * c22_sub - c24_sub >= 0)
+            {
+                v4_sub = TMath::Sqrt(TMath::Sqrt(2 * c22_sub * c22_sub - c24_sub));
+            }
+            double diff4 = v4_sub - v24->GetBinContent(j);
+            error4eachbin_v24[j - 1] += diff4 * diff4;
+        }
+    }
+    // end loop all subevents
+    for (int i = 0; i < error4eachbin.size(); i++)
+    {
+        double stddev = TMath::Sqrt(error4eachbin[i] / (nsub - 1));
+        v22->SetBinError(i + 1, stddev);
+
+        double stddev4 = TMath::Sqrt(error4eachbin_v24[i] / (nsub - 1));
+        v24->SetBinError(i + 1, stddev4);
+    }
+    // end calculate error for v2{2}
+
+    return {v22, v24};
 }
+} // namespace qaUtil4Fc
 
 namespace lambdaFunction
 {
-    TH1D *get_v22_primeprime(TProfile2D *, TProfile2D *prof2d)
+TH1D *get_v22_primeprime(TProfile2D *, TProfile2D *prof2d)
+{
+    TProfile *prof = prof2d->ProfileX("c22pure", FCGraphName::c22pure, FCGraphName::c22pure);
+    TH1D *hres = new TH1D("1", "", prof->GetNbinsX(), prof->GetXaxis()->GetXbins()->GetArray());
+    for (int i = 1; i <= prof->GetNbinsX(); i++)
     {
-        TProfile *prof = prof2d->ProfileX("c22pure", FCGraphName::c22pure, FCGraphName::c22pure);
-        TH1D *hres = new TH1D("1", "", prof->GetNbinsX(), prof->GetXaxis()->GetXbins()->GetArray());
-        for (int i = 1; i <= prof->GetNbinsX(); i++)
-        {
-            double res = prof->GetBinContent(i);
-            hres->SetBinContent(i, res > 0 ? TMath::Sqrt(res) : 0);
-        }
-        return hres;
+        double res = prof->GetBinContent(i);
+        hres->SetBinContent(i, res > 0 ? TMath::Sqrt(res) : 0);
     }
-
-    TH1D *get_v22_prime(TProfile2D *prof2d_ch, TProfile2D *prof2d_pid)
-    {
-        TProfile *prof_ch = prof2d_ch->ProfileX("c22ch", FCGraphName::c22, FCGraphName::c22);
-        TProfile *prof_pid_ch = prof2d_pid->ProfileX("c22chpid", FCGraphName::c22, FCGraphName::c22);
-        TH1D *hres = new TH1D("1", "", prof_ch->GetNbinsX(), prof_ch->GetXaxis()->GetXbins()->GetArray());
-
-        for (int i = 1; i <= prof_ch->GetNbinsX(); i++)
-        {
-            double data_ch = prof_ch->GetBinContent(i);
-            double data_pid = prof_pid_ch->GetBinContent(i);
-            if (data_ch < 0)
-            {
-                hres->SetBinContent(i, 0);
-            }
-            hres->SetBinContent(i, data_pid / TMath::Sqrt(data_ch));
-        }
-        return hres;
-    }
+    return hres;
 }
+
+TH1D *get_v22_prime(TProfile2D *prof2d_ch, TProfile2D *prof2d_pid)
+{
+    TProfile *prof_ch = prof2d_ch->ProfileX("c22ch", FCGraphName::c22, FCGraphName::c22);
+    TProfile *prof_pid_ch = prof2d_pid->ProfileX("c22chpid", FCGraphName::c22, FCGraphName::c22);
+    TH1D *hres = new TH1D("1", "", prof_ch->GetNbinsX(), prof_ch->GetXaxis()->GetXbins()->GetArray());
+
+    for (int i = 1; i <= prof_ch->GetNbinsX(); i++)
+    {
+        double data_ch = prof_ch->GetBinContent(i);
+        double data_pid = prof_pid_ch->GetBinContent(i);
+        if (data_ch < 0)
+        {
+            hres->SetBinContent(i, 0);
+        }
+        hres->SetBinContent(i, data_pid / TMath::Sqrt(data_ch));
+    }
+    return hres;
+}
+} // namespace lambdaFunction
 
 void QA()
 {
     // init
     TFile *f = TFile::Open(FILE);
-    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr_checkdiff");
+    TDirectory *dir_main = (TDirectory *)f->Get("pid-flow-pt-corr_TPCANDTOF");
     FlowContainer *fc_ch = (FlowContainer *)dir_main->Get("FlowContainerCharged");
     FlowContainer *fc_pi = (FlowContainer *)dir_main->Get("FlowContainerPi");
     FlowContainer *fc_ka = (FlowContainer *)dir_main->Get("FlowContainerKa");
@@ -291,7 +305,8 @@ void QA()
      */
     {
 #ifdef BLOCK3
-        const char *ptEffFile = "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/corrections/Eff.root";
+        const char *ptEffFile =
+            "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/corrections/Eff.root";
         TFile *f_eff = TFile::Open(ptEffFile);
         TH1D *h_eff = (TH1D *)f_eff->Get("ccdb_object");
         TH1D *h_pt = (TH1D *)dir_main->Get("hPt");
@@ -314,7 +329,8 @@ void QA()
     {
 #ifdef BLOCK4
         std::vector<TH1D *> v2s_ch = qaUtil4Fc::get_v22_v24(fc_ch);
-        TFile *file_run2 = TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/run2v2cent.root");
+        TFile *file_run2 =
+            TFile::Open("/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/v2ptcorr/run2v2cent.root");
         TDirectory *dir_run2 = (TDirectory *)file_run2->Get("Table 1");
         TH1D *h_run2 = (TH1D *)dir_run2->Get("Hist1D_y1");
         TH1D *h_run2v24 = (TH1D *)dir_run2->Get("Hist1D_y2");
@@ -439,7 +455,8 @@ void QA()
      */
     {
 #ifdef BLOCK6
-        const char *main_file = "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pt_diff_close_its.root";
+        const char *main_file =
+            "/home/huinaibing/git_repo/huinaibingLinux/root_code/workdir/datas/pt_diff_close_its.root";
         TFile *f_main = TFile::Open(main_file);
         {
             TDirectory *dir_02to05 = (TDirectory *)f_main->Get("pid-flow-pt-corr_pt02to05_id44937");

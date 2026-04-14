@@ -1,0 +1,43 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.36.04                        https://root.cern |
+  | (c) 1995-2025, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for linuxx8664gcc on Mar 06 2026, 05:46:58                 |
+  | From tags/v6-36-04-alice9@v6-36-04-alice9                        |
+  | With c++ (GCC) 14.2.0                                            |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing calculate_charged_rho.cpp...
+cent 1
+varpt 0.00937617 varc22 0.000703693
+===
+cov 1 1.04382e-06
+cent 2
+varpt 0.0109565 varc22 0.00145641
+===
+cov 2 2.94438e-06
+cent 3
+varpt 0.0123605 varc22 0.00226916
+===
+cov 3 5.08136e-06
+cent 4
+varpt 0.0138511 varc22 0.00304504
+===
+cov 4 7.81811e-06
+cent 5
+varpt 0.0161318 varc22 0.00388821
+===
+cov 5 1.2385e-05
+cent 6
+varpt 0.0198093 varc22 0.00528892
+===
+cov 6 2.11698e-05
+cent 7
+varpt 0.0241306 varc22 0.00579707
+===
+cov 7 2.89443e-05
+cent 8
+varpt 0.0290973 varc22 0.00327838
+===
+cov 8 3.2403e-05

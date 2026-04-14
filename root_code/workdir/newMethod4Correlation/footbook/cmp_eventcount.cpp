@@ -42,12 +42,13 @@ void cmp_eventcount()
     hcount_small->SetLineWidth(2);
 
     // 3. 绘制直方图
-    hcount_big->Draw("hist");        // "hist" 表示绘制直方图线条
+
     hcount_small->Draw("hist same"); // "same" 表示在同一张画布上叠加
+    hcount_big->Draw("hist SAME");        // "hist" 表示绘制直方图线条
 
     // 4. 添加图例 (位置: x1, y1, x2, y2)
     TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
-    leg->AddEntry(hcount_big, "Big Sample", "l"); // "l" 表示线条
-    leg->AddEntry(hcount_small, "Small Sample", "l");
+    leg->AddEntry(hcount_big, "Big dataset", "l"); // "l" 表示线条
+    leg->AddEntry(hcount_small, "Small dataset", "l");
     leg->Draw();
 }
